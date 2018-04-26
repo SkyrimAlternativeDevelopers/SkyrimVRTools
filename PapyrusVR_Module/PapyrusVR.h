@@ -13,9 +13,13 @@
 #include "skse64/GameRTTI.h"
 #include "skse64/BSModelDB.h"
 #include "skse64/PluginManager.h"
+#include "skse64/PluginAPI.h"
 
-#include "VRManager.h"
+#include "api/PapyrusVRAPI.h"
+#include "api/VRManagerAPI.h"
+
 #include "OpenVRUtils.h"
+#include "VRManager.h"
 
 namespace PapyrusVR
 {
@@ -44,7 +48,7 @@ namespace PapyrusVR
 
 	void OnVRUpdate(); //Called once every pose update by the rendering thread
 
-	#pragma region PosesUpdate CustomEvent
+	#pragma region API
 
 	//Papyrus
 	extern RegistrationSetHolder<TESForm*> g_posesUpdateEventRegs;
@@ -52,12 +56,14 @@ namespace PapyrusVR
 	//C++ Plugins
 	typedef std::function<void(float)> OnPoseUpdateCallback;
 	typedef std::list<OnPoseUpdateCallback> PoseUpdateListeners;
-	extern PoseUpdateListeners g_poseUpdateListeners;
+	extern PoseUpdateListeners g_poseUpdateListeners; 
+	VRManagerAPI* GetVRManager();
 
 	#pragma endregion
-
-	#pragma region API
-	extern "C" __declspec(dllexport) void RegisterPoseUpdateListener(OnPoseUpdateCallback callback);
-	extern "C" __declspec(dllexport) VRManager* g_vrmanager;
+	
+	#pragma region Messaging Interface
+	void OnSKSEMessageRecived(SKSEMessagingInterface::Message* message);
+	void RegisterMessagingInterface(SKSEMessagingInterface* messagingInterface);
+	void RegisterHandle(PluginHandle* handle);
 	#pragma endregion
 }

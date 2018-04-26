@@ -1,4 +1,4 @@
-LIBRARY	"00_papyrusvr"
+LIBRARY	"papyrusvr"
 EXPORTS
 SKSEPlugin_Query
 SKSEPlugin_Load

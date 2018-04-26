@@ -11,185 +11,230 @@ namespace PapyrusVR
 	PoseUpdateListeners							g_poseUpdateListeners;
 
 	//API
-	VRManager* g_vrmanager = NULL;
-	std::mutex listenersMutex; //Used to handle subscriptions
+	std::mutex					listenersMutex; 
+	SKSEMessagingInterface*		g_messagingInterface;
+	PluginHandle*				g_pluginHandle;
+	PapyrusVRAPI apiMessage;
 
-	#pragma region CustomPose Event
-	class EventQueueFunctor0 : public IFunctionArguments
-	{
-	public:
-		EventQueueFunctor0(BSFixedString & a_eventName)
-			: eventName(a_eventName.data) {}
-
-		virtual bool	Copy(Output * dst)
+	#pragma region Papyrus Events
+		class EventQueueFunctor0 : public IFunctionArguments
 		{
-			//dst->Resize(1);
-			//SetVMValue(dst->Get(0), args1);
+		public:
+			EventQueueFunctor0(BSFixedString & a_eventName)
+				: eventName(a_eventName.data) {}
 
-			return true;
-		}
+			virtual bool Copy(Output * dst) { return true; }
 
-		void			operator() (const EventRegistration<TESForm*> & reg)
-		{
-			VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
-			registry->QueueEvent(reg.handle, &eventName, this);
-		}
+			void operator() (const EventRegistration<TESForm*> & reg)
+			{
+				VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
+				registry->QueueEvent(reg.handle, &eventName, this);
+			}
 
-	private:
-		BSFixedString	eventName;
-	};
+		private:
+			BSFixedString	eventName;
+		};
 	#pragma endregion
 
 	#pragma region Papyrus Native Functions
 
-	void GetTrackedDevicePoseByID(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
-	{
-		_MESSAGE("GetTrackedDevicePoseByID");
-		TrackedDevicePose_t* requestedPose;
-		switch (deviceEnum)
+		void GetTrackedDevicePoseByID(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
 		{
-			case TrackedDevice::HMD:
-				requestedPose = VRManager::GetInstance().GetHMDPose();
-				break;
-			case TrackedDevice::RightController:
-				requestedPose = VRManager::GetInstance().GetRightHandPose();
-				break;
-			case TrackedDevice::LeftController:
-				requestedPose = VRManager::GetInstance().GetLeftHandPose();
-				break;
-		}
+			_MESSAGE("GetTrackedDevicePoseByID");
+			TrackedDevicePose_t* requestedPose;
+			switch (deviceEnum)
+			{
+				case TrackedDevice::HMD:
+					requestedPose = VRManager::GetInstance().GetHMDPose();
+					break;
+				case TrackedDevice::RightController:
+					requestedPose = VRManager::GetInstance().GetRightHandPose();
+					break;
+				case TrackedDevice::LeftController:
+					requestedPose = VRManager::GetInstance().GetLeftHandPose();
+					break;
+			}
 		
-		//Pose exists
-		if (requestedPose)
-		{
-			HmdQuaternion_t deviceRotation = OpenVRUtils::GetRotation(requestedPose->mDeviceToAbsoluteTracking);
-			HmdVector3_t devicePosition = OpenVRUtils::GetPosition(requestedPose->mDeviceToAbsoluteTracking);
+			//Pose exists
+			if (requestedPose)
+			{
+				HmdQuaternion_t deviceRotation = OpenVRUtils::GetRotation(requestedPose->mDeviceToAbsoluteTracking);
+				HmdVector3_t devicePosition = OpenVRUtils::GetPosition(requestedPose->mDeviceToAbsoluteTracking);
 
-			float number;
+				float number;
 
-			//Position
-			//Set X
-			returnValues.Get(&number, 0);
-			number = devicePosition.v[0];
-			returnValues.Set(&number, 0);
+				//Position
+				//Set X
+				returnValues.Get(&number, 0);
+				number = devicePosition.v[0];
+				returnValues.Set(&number, 0);
 
-			//Set Y
-			returnValues.Get(&number, 1);
-			number = devicePosition.v[1];
-			returnValues.Set(&number, 1);
+				//Set Y
+				returnValues.Get(&number, 1);
+				number = devicePosition.v[1];
+				returnValues.Set(&number, 1);
 
-			//Set Z
-			returnValues.Get(&number, 2);
-			number = devicePosition.v[2];
-			returnValues.Set(&number, 2);
+				//Set Z
+				returnValues.Get(&number, 2);
+				number = devicePosition.v[2];
+				returnValues.Set(&number, 2);
 
-			//Rotation
-			//Set X
-			returnValues.Get(&number, 3);
-			number = deviceRotation.x;
-			returnValues.Set(&number, 3);
+				//Rotation
+				//Set X
+				returnValues.Get(&number, 3);
+				number = deviceRotation.x;
+				returnValues.Set(&number, 3);
 
-			//Set Y
-			returnValues.Get(&number, 4);
-			number = deviceRotation.y;
-			returnValues.Set(&number, 4);
+				//Set Y
+				returnValues.Get(&number, 4);
+				number = deviceRotation.y;
+				returnValues.Set(&number, 4);
 
-			//Set Z
-			returnValues.Get(&number, 5);
-			number = deviceRotation.z;
-			returnValues.Set(&number, 5);
+				//Set Z
+				returnValues.Get(&number, 5);
+				number = deviceRotation.z;
+				returnValues.Set(&number, 5);
 
-			//Set W
-			returnValues.Get(&number, 6);
-			number = deviceRotation.w;
-			returnValues.Set(&number, 6);
-		}
-	}
-
-	void RegisterForPoseUpdates(StaticFunctionTag *base,TESForm * thisForm)
-	{
-		_MESSAGE("RegisterForPoseUpdates");
-		if (!thisForm)
-		{
-			_MESSAGE("Called RegisterForPoseUpdates from NULL form!");
-			return;
+				//Set W
+				returnValues.Get(&number, 6);
+				number = deviceRotation.w;
+				returnValues.Set(&number, 6);
+			}
 		}
 
-		g_posesUpdateEventRegs.Register(thisForm->GetFormType(), thisForm);
-
-
-		if (thisForm->formID)
-			_MESSAGE("%d registered for PoseUpdates", thisForm->formID);
-	}
-
-	void UnregisterForPoseUpdates(StaticFunctionTag *base,TESForm * thisForm)
-	{
-		_MESSAGE("UnregisterForPoseUpdates");
-		if (!thisForm)
+		void RegisterForPoseUpdates(StaticFunctionTag *base,TESForm * thisForm)
 		{
-			_MESSAGE("Called UnregisterForPoseUpdates from NULL form!");
-			return;
+			_MESSAGE("RegisterForPoseUpdates");
+			if (!thisForm)
+			{
+				_MESSAGE("Called RegisterForPoseUpdates from NULL form!");
+				return;
+			}
+
+			g_posesUpdateEventRegs.Register(thisForm->GetFormType(), thisForm);
+
+
+			if (thisForm->formID)
+				_MESSAGE("%d registered for PoseUpdates", thisForm->formID);
 		}
 
-		g_posesUpdateEventRegs.Unregister(thisForm->GetFormType(), thisForm);
+		void UnregisterForPoseUpdates(StaticFunctionTag *base,TESForm * thisForm)
+		{
+			_MESSAGE("UnregisterForPoseUpdates");
+			if (!thisForm)
+			{
+				_MESSAGE("Called UnregisterForPoseUpdates from NULL form!");
+				return;
+			}
 
-		if (thisForm->formID)
-			_MESSAGE("%d unregistered for PoseUpdates", thisForm->formID);
-	}
+			g_posesUpdateEventRegs.Unregister(thisForm->GetFormType(), thisForm);
+
+			if (thisForm->formID)
+				_MESSAGE("%d unregistered for PoseUpdates", thisForm->formID);
+		}
+
+		//Used for debugging
+		std::clock_t start = clock();
+		void TimeSinceLastCall(StaticFunctionTag* base)
+		{
+			clock_t end = clock();
+			double elapsed_seconds = double(end - start) / CLOCKS_PER_SEC;
+			_MESSAGE("90 events fired after %f seconds", elapsed_seconds);
+			start = end;
+		}
 
 	#pragma endregion
 
-	//Used for debugging
-	std::clock_t start = clock();
-	void TimeSinceLastCall(StaticFunctionTag* base)
+	#pragma region OpenVR Hooks
+
+		//SkyrimVR+0xC50C69
+		BSFixedString eventName("OnPosesUpdate");
+		clock_t lastFrame = clock();
+		clock_t thisFrame;
+		double deltaTime = 0.0f;
+		void OnVRUpdate()
+		{
+			//Calculate deltaTime
+			thisFrame = clock();
+			deltaTime = double(thisFrame - lastFrame) / CLOCKS_PER_SEC;
+			lastFrame = thisFrame;
+
+			//Update Poses
+			VRManager::GetInstance().UpdatePoses();
+
+			//Notify Listeners
+			listenersMutex.lock();
+			for (OnPoseUpdateCallback& callback : g_poseUpdateListeners)
+				callback(deltaTime);
+			listenersMutex.unlock();
+
+			//Notify Papyrus scripts
+			//WARNING: Disabled cause this will currently freeze the game every 90 seconds
+			//if (g_posesUpdateEventRegs.m_data.size() > 0)
+			//	g_posesUpdateEventRegs.ForEach(
+			//		EventQueueFunctor0(eventName)
+			//	);
+		}
+
+	#pragma endregion
+
+	#pragma region API
+		void RegisterPoseUpdateListener(OnPoseUpdateCallback callback)
+		{
+			listenersMutex.lock();
+			g_poseUpdateListeners.push_back(callback);
+			listenersMutex.unlock();
+		}
+
+		//Returns the VRManager singleton instance
+		VRManagerAPI* GetVRManager()
+		{
+			return &VRManager::GetInstance();
+		}
+	#pragma endregion
+
+	#pragma region Messaging Interface
+
+		// Listens for SKSE events
+		void OnSKSEMessageRecived(SKSEMessagingInterface::Message* message)
+		{
+			if (message)
+			{
+				if (message->type == SKSEMessagingInterface::kMessage_PostPostLoad)
+				{
+					_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
+					if (g_messagingInterface && g_pluginHandle)
+					{
+						apiMessage.GetVRManager = GetVRManager;
+						apiMessage.RegisterPoseUpdateListener = RegisterPoseUpdateListener;
+
+						//Sends pointers to API functions/classes
+						g_messagingInterface->Dispatch(*g_pluginHandle, kPapyrusVR_Message_Init, &apiMessage, sizeof(apiMessage), NULL);
+					}
+				}
+			}
+		}
+
+		void RegisterMessagingInterface(SKSEMessagingInterface* messagingInterface)
+		{
+			if (messagingInterface && g_pluginHandle)
+			{
+				g_messagingInterface = messagingInterface;
+				_MESSAGE("Registering for plugin loaded message!");
+				g_messagingInterface->RegisterListener(*g_pluginHandle, "SKSE", OnSKSEMessageRecived);
+			}
+		}
+
+		void RegisterHandle(PluginHandle* handle)
+		{
+			if (handle)
+				g_pluginHandle = handle;
+		}
+	#pragma endregion
+
+	//Entry Point
+	bool RegisterFuncs(VMClassRegistry* registry) 
 	{
-		clock_t end = clock();
-		double elapsed_seconds = double(end - start) / CLOCKS_PER_SEC;
-		_MESSAGE("90 events fired after %f seconds", elapsed_seconds);
-		start = end;
-	}
-
-	//SkyrimVR+0xC50C69
-	BSFixedString eventName("OnPosesUpdate");
-	clock_t lastFrame = clock();
-	clock_t thisFrame;
-	double deltaTime = 0.0f;
-	void OnVRUpdate()
-	{
-		//Creates vr_manager link
-		if (!g_vrmanager)
-			g_vrmanager = &VRManager::GetInstance();
-
-		//Calculate deltaTime
-		thisFrame = clock();
-		deltaTime = double(thisFrame - lastFrame) / CLOCKS_PER_SEC;
-		lastFrame = thisFrame;
-
-		//Update Poses
-		VRManager::GetInstance().UpdatePoses();
-
-		//Notify Listeners
-		listenersMutex.lock();
-		for (OnPoseUpdateCallback& callback : g_poseUpdateListeners)
-			callback(deltaTime);
-		listenersMutex.unlock();
-
-		//Notify Papyrus scripts
-		//WARNING: Disabled cause this will currently freeze the game every 90 seconds
-		//if (g_posesUpdateEventRegs.m_data.size() > 0)
-		//	g_posesUpdateEventRegs.ForEach(
-		//		EventQueueFunctor0(eventName)
-		//	);
-	}
-
-	void RegisterPoseUpdateListener(OnPoseUpdateCallback callback)
-	{
-		listenersMutex.lock();
-		g_poseUpdateListeners.push_back(callback);
-		listenersMutex.unlock();
-	}
-
-	bool RegisterFuncs(VMClassRegistry* registry) {
 		_MESSAGE("Registering native functions...");
 		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetTrackedDevicePoseByIDNative", "PapyrusVR", PapyrusVR::GetTrackedDevicePoseByID, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("RegisterForPoseUpdates", "PapyrusVR", PapyrusVR::RegisterForPoseUpdates, registry));

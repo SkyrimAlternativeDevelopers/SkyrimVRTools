@@ -46,7 +46,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>00_papyrusvr</TargetName>
+    <TargetName>papyrusvr</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -127,6 +127,8 @@
     <ClCompile Include="VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="api\PapyrusVRAPI.h" />
+    <ClInclude Include="api\VRManagerAPI.h" />
     <ClInclude Include="OpenVRUtils.h" />
     <ClInclude Include="PapyrusVR.h" />
     <ClInclude Include="VRManager.h" />

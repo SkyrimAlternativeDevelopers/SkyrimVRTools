@@ -25,6 +25,10 @@ extern "C" {
 
 		// store plugin handle so we can identify ourselves later
 		g_pluginHandle = skse->GetPluginHandle();
+		PapyrusVR::RegisterHandle(&g_pluginHandle);
+
+		//Registers for messages
+		PapyrusVR::RegisterMessagingInterface((SKSEMessagingInterface *)skse->QueryInterface(kInterface_Messaging));
 
 		if (skse->isEditor)
 		{

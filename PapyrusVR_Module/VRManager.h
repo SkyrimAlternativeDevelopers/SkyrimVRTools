@@ -1,11 +1,12 @@
 #pragma once
 #include "openvr.h"
+#include "api/VRManagerAPI.h"
 
 using namespace vr;
 namespace PapyrusVR
 {
 	//Singleton to manage OpenVR calls (cache poses etc.)
-	class VRManager
+	class VRManager : public VRManagerAPI
 	{
 	public:
 		static VRManager& GetInstance()
