@@ -2,7 +2,7 @@
 Initial SKSE Plugin to expose OpenVR to Papyrus
 
 #TODO
-- Coordinate transofrmation to Skyrim world space
+- Coordinate transform to Skyrim world space
 - Papyrus Methods
 - Overlap Events
 - Gestures Events
