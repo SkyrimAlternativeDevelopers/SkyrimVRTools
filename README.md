@@ -46,16 +46,20 @@ The solution will automatically copy the resulting .dll to the SKSE Plugins fold
 ---
 
 ## Developing Plugins
-To use PapyrusVR in one of your plugins you can use it as a dynamic library.
+You can use PapyrusVR functionalities in your plugin by using the PapyrusVR API.
 
 Download the API headers files from the [releases page](https://github.com/artumino/PapyrusVR/releases) or get them from the current branch under the api folder.
 
 Make sure to add the headers to your include path.
 
-The PapyrusVR API currently gives you access to the VRManager and to the pose events dispatcher.
+You'll also need the OpenVR v1.0.10 libs and headers file. (We plan to remove this dependecy further down the road)
 
-During your plugin load register to the Messaging interface and listen for messages coming from PapyrusVR.
-PApyrusVR will send a message on Init with evevry adress needed to use the API correctly.
+The PapyrusVR API currently gives you access to the VRManager and to the pose event dispatcher.
+
+During your plugin load register to the Messaging interface and listen for the kMessage_PostLoad coming from SKSE.
+Once you recive this message you can use the messaging interface to listen for messages coming from PapyrusVR.
+
+PapyrusVR will send a message on Init with every address needed to use the API correctly as payload.
 
 Here is an example on how to use the API:
 ```C++
