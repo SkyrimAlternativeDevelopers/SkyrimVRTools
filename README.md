@@ -141,13 +141,26 @@ extern "C" {
 		}
 	}
 
+	//Listener for SKSE Messages
+	void OnSKSEMessage(SKSEMessagingInterface::Message* msg)
+	{
+		if (msg)
+		{
+			if (msg->type == SKSEMessagingInterface::kMessage_PostLoad)
+			{
+				_MESSAGE("SKSE PostLoad recived, registering for PapyrusVR messages");
+				g_messaging->RegisterListener(g_pluginHandle, "PapyrusVR", OnPapyrusVRMessage);
+			}
+		}
+	}
+
 	bool SKSEPlugin_Load(const SKSEInterface * skse) {	// Called by SKSE to load this plugin
 		_MESSAGE("MyFancyPlugin loaded");
 
-		//Registers for PapyrusVR Init Messages
-		_MESSAGE("Registering for PapyrusVR messages");
+		//Registers for SKSE Messages (PapyrusVR probably still need to load, wait for SKSE message PostLoad)
+		_MESSAGE("Registering for SKSE messages");
 		g_messaging = (SKSEMessagingInterface*)skse->QueryInterface(kInterface_Messaging);
-		g_messaging->RegisterListener(g_pluginHandle, "PapyrusVR", OnPapyrusVRMessage);
+		g_messaging->RegisterListener(g_pluginHandle, "SKSE", OnSKSEMessage);
 
 		//DO STUFF...
 		//wait for PapyrusVR init (during PostPostLoad SKSE Message)
