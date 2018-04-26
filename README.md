@@ -174,5 +174,3 @@ extern "C" {
 
 };
 ```
-
-WARNING: There's currently an export issue with VRManager and using it in a solution will cause link errors
