@@ -70,8 +70,8 @@ Here is an example on how to use the API:
 #include "common/IDebugLog.h"
 
 //Headers under api/ folder
-#include "PapyrusVR_Module\PapyrusVR_Module\api\PapyrusVRAPI.h"
-#include "PapyrusVR_Module\PapyrusVR_Module\api\VRManagerAPI.h"
+#include "api/PapyrusVRAPI.h"
+#include "api/VRManagerAPI.h"
 
 static PluginHandle					g_pluginHandle = kPluginHandle_Invalid;
 static SKSEMessagingInterface		* g_messaging = NULL;
