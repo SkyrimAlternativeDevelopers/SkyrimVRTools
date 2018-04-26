@@ -15,7 +15,9 @@ In order to build this plugin you must have the following folder structure:
 - Root 
 |-- *PapyrusVR* (this repo)
 |  |--PapyrusVR_Module
-|    |--libs <------ Place every .lib file needed here
+|    |--libs <------ Place .lib files used for both build types here
+|	|-- Release 	<---- .lib file used for Release builds
+|	|-- Debug	<---- .lib files used for Debug build
 |  ...
 |-- skse
 |  |-- common
