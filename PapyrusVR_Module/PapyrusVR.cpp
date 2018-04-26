@@ -3,15 +3,16 @@
 namespace PapyrusVR 
 {
 	//OpenVR Hook
-	RelocAddr <uintptr_t> OpenVR_Call(0xC50C69);
-	BranchTrampoline l_LocalBranchTrampoline;
+	RelocAddr <uintptr_t>	OpenVR_Call(0xC50C69);
+	BranchTrampoline		l_LocalBranchTrampoline;
 
 	//Custom Pose Event
 	RegistrationSetHolder<TESForm*>				g_posesUpdateEventRegs;
-	EventDispatcher<PapyrusVRPosesUpdateEvent>	g_posesUpdateEventDispatcher;
-	PosesUpdateUpdateEventHandler				g_posesUpdateEventHandler;
-	PapyrusVRPosesUpdateEvent					ev;
-	
+	PoseUpdateListeners							g_poseUpdateListeners;
+
+	//API
+	VRManager* g_vrmanager = NULL;
+	std::mutex listenersMutex; //Used to handle subscriptions
 
 	#pragma region CustomPose Event
 	class EventQueueFunctor0 : public IFunctionArguments
@@ -37,16 +38,6 @@ namespace PapyrusVR
 	private:
 		BSFixedString	eventName;
 	};
-
-	EventResult PosesUpdateUpdateEventHandler::ReceiveEvent(PapyrusVRPosesUpdateEvent * evn, EventDispatcher<PapyrusVRPosesUpdateEvent> * dispatcher)
-	{
-		g_posesUpdateEventRegs.ForEach(
-			EventQueueFunctor0(BSFixedString("OnPosesUpdate"))
-		);
-
-		return kEvent_Continue;
-	}
-
 	#pragma endregion
 
 	#pragma region Papyrus Native Functions
@@ -148,17 +139,54 @@ namespace PapyrusVR
 
 	#pragma endregion
 
+	//Used for debugging
+	std::clock_t start = clock();
+	void TimeSinceLastCall(StaticFunctionTag* base)
+	{
+		clock_t end = clock();
+		double elapsed_seconds = double(end - start) / CLOCKS_PER_SEC;
+		_MESSAGE("90 events fired after %f seconds", elapsed_seconds);
+		start = end;
+	}
+
 	//SkyrimVR+0xC50C69
+	BSFixedString eventName("OnPosesUpdate");
+	clock_t lastFrame = clock();
+	clock_t thisFrame;
+	double deltaTime = 0.0f;
 	void OnVRUpdate()
 	{
+		//Creates vr_manager link
+		if (!g_vrmanager)
+			g_vrmanager = &VRManager::GetInstance();
+
+		//Calculate deltaTime
+		thisFrame = clock();
+		deltaTime = double(thisFrame - lastFrame) / CLOCKS_PER_SEC;
+		lastFrame = thisFrame;
+
+		//Update Poses
 		VRManager::GetInstance().UpdatePoses();
 
+		//Notify Listeners
+		listenersMutex.lock();
+		for (OnPoseUpdateCallback& callback : g_poseUpdateListeners)
+			callback(deltaTime);
+		listenersMutex.unlock();
+
 		//Notify Papyrus scripts
-		if (g_posesUpdateEventRegs.m_data.size() > 0)
-		{
-			//Crashes here
-			//g_posesUpdateEventDispatcher.SendEvent(&ev);
-		}
+		//WARNING: Disabled cause this will currently freeze the game every 90 seconds
+		//if (g_posesUpdateEventRegs.m_data.size() > 0)
+		//	g_posesUpdateEventRegs.ForEach(
+		//		EventQueueFunctor0(eventName)
+		//	);
+	}
+
+	void RegisterPoseUpdateListener(OnPoseUpdateCallback callback)
+	{
+		listenersMutex.lock();
+		g_poseUpdateListeners.push_back(callback);
+		listenersMutex.unlock();
 	}
 
 	bool RegisterFuncs(VMClassRegistry* registry) {
@@ -166,10 +194,8 @@ namespace PapyrusVR
 		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetTrackedDevicePoseByIDNative", "PapyrusVR", PapyrusVR::GetTrackedDevicePoseByID, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("RegisterForPoseUpdates", "PapyrusVR", PapyrusVR::RegisterForPoseUpdates, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("UnregisterForPoseUpdates", "PapyrusVR", PapyrusVR::UnregisterForPoseUpdates, registry));
-		
-		_MESSAGE("Creating event sink");
-		g_posesUpdateEventDispatcher.AddEventSink(&g_posesUpdateEventHandler);
-		
+		registry->RegisterFunction(new NativeFunction0 <StaticFunctionTag, void>("TimeSinceLastCall", "PapyrusVR", PapyrusVR::TimeSinceLastCall, registry)); //Debug function
+
 		_MESSAGE("Creating trampoline");
 		if (!l_LocalBranchTrampoline.Create(1024 * 64))
 		{
@@ -182,4 +208,4 @@ namespace PapyrusVR
 
 		return true;
 	}
-} 
+}

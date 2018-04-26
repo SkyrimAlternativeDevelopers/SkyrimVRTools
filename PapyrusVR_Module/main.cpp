@@ -10,7 +10,7 @@ static PluginHandle					g_pluginHandle = kPluginHandle_Invalid;
 static SKSEPapyrusInterface         * g_papyrus = NULL;
 
 extern "C" {
-
+	
 	bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info) {	// Called by SKSE to learn about this plugin and check that it's safe to load it
 		gLog.OpenRelative(CSIDL_MYDOCUMENTS, "\\My Games\\Skyrim VR\\SKSE\\PapyrusVR.log");
 		gLog.SetPrintLevel(IDebugLog::kLevel_Error);
@@ -50,6 +50,9 @@ extern "C" {
 		_MESSAGE("PapyrusVR loaded");
 
 		g_papyrus = (SKSEPapyrusInterface *)skse->QueryInterface(kInterface_Papyrus);
+
+		//Updates pointer
+		_MESSAGE("Current register plugin function at memory address: %p", PapyrusVR::RegisterForPoseUpdates);
 
 		//Check if the function registration was a success...
 		bool btest = g_papyrus->Register(PapyrusVR::RegisterFuncs);

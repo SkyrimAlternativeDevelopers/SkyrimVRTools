@@ -1,17 +1,24 @@
 #pragma once
+#include <ctime>
+#include <algorithm>
+#include <functional>
+#include <mutex> 
+#include <list>
+
 #include "skse64_common/Relocation.h"
 #include "skse64_common/BranchTrampoline.h"
+
 #include "skse64/PapyrusNativeFunctions.h"
 #include "skse64/PapyrusEvents.h"
 #include "skse64/GameRTTI.h"
 #include "skse64/BSModelDB.h"
 #include "skse64/PluginManager.h"
+
 #include "VRManager.h"
 #include "OpenVRUtils.h"
 
 namespace PapyrusVR
 {
-
 	//TODO: Trackers
 	enum TrackedDevice
 	{
@@ -38,28 +45,19 @@ namespace PapyrusVR
 	void OnVRUpdate(); //Called once every pose update by the rendering thread
 
 	#pragma region PosesUpdate CustomEvent
+
+	//Papyrus
 	extern RegistrationSetHolder<TESForm*> g_posesUpdateEventRegs;
 
-	struct PapyrusVRPosesUpdateEvent
-	{
-		PapyrusVRPosesUpdateEvent() {}
-	};
-	extern PapyrusVRPosesUpdateEvent ev;
+	//C++ Plugins
+	typedef std::function<void(float)> OnPoseUpdateCallback;
+	typedef std::list<OnPoseUpdateCallback> PoseUpdateListeners;
+	extern PoseUpdateListeners g_poseUpdateListeners;
 
-	template <>
-	class BSTEventSink <PapyrusVRPosesUpdateEvent>
-	{
-	public:
-		virtual	EventResult ReceiveEvent(PapyrusVRPosesUpdateEvent * evn, EventDispatcher<PapyrusVRPosesUpdateEvent> * dispatcher) = 0;
-	};
-	extern EventDispatcher<PapyrusVRPosesUpdateEvent> g_posesUpdateEventDispatcher;
-
-	class PosesUpdateUpdateEventHandler : public BSTEventSink <PapyrusVRPosesUpdateEvent>
-	{
-	public:
-		virtual	EventResult	ReceiveEvent(PapyrusVRPosesUpdateEvent * evn, EventDispatcher<PapyrusVRPosesUpdateEvent> * dispatcher);
-	};
-	extern PosesUpdateUpdateEventHandler g_posesUpdateEventHandler;
 	#pragma endregion
 
+	#pragma region API
+	extern "C" __declspec(dllexport) void RegisterPoseUpdateListener(OnPoseUpdateCallback callback);
+	extern "C" __declspec(dllexport) VRManager* g_vrmanager;
+	#pragma endregion
 }
