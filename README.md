@@ -175,7 +175,7 @@ extern "C" {
 };
 ```
 
-##Papyrus Script Quest Example
+## Papyrus Script Quest Example
 ```Papyrus
 Scriptname MyFancyQuest extends Quest
 
