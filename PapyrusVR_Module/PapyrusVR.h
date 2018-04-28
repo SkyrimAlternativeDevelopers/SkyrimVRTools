@@ -68,11 +68,18 @@ namespace PapyrusVR
 	//Used by papyrus scripts to register for Pose Events
 	void RegisterForPoseUpdates(StaticFunctionTag *base, TESForm * thisForm);	
 	void UnregisterForPoseUpdates(StaticFunctionTag *base, TESForm * thisForm);
+
+	//Used by papyrus scripts to register for Button Events
+	void RegisterForVRButtonEvents(StaticFunctionTag *base, TESForm * thisForm);
+	void UnregisterForVRButtonEvents(StaticFunctionTag *base, TESForm * thisForm);
+
 	void TimeSinceLastCall(StaticFunctionTag* base);
 
 	#pragma endregion
 
 	bool RegisterFuncs(VMClassRegistry* registry);
+
+	void OnVRButtonEvent(VREventType eventType, vr::EVRButtonId buttonId);
 
 	void OnVRUpdate(); //Called once every pose update by the rendering thread
 

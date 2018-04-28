@@ -32,52 +32,160 @@ namespace PapyrusVR
 				_MESSAGE("Error while retriving game poses!");
 
 			//Updates poses
+			_leftHandID = _vr->GetTrackedDeviceIndexForControllerRole(vr::ETrackedControllerRole::TrackedControllerRole_LeftHand);
+			_rightHandID = _vr->GetTrackedDeviceIndexForControllerRole(vr::ETrackedControllerRole::TrackedControllerRole_RightHand);
 			for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
 			{
 				switch (_vr->GetTrackedDeviceClass(i))
 				{
-					case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-						switch (_vr->GetControllerRoleForTrackedDeviceIndex(i))
-						{
-							case ETrackedControllerRole::TrackedControllerRole_LeftHand:
-								_leftHandID = i;
-							break;
-							case ETrackedControllerRole::TrackedControllerRole_RightHand:
-								_rightHandID = i;
-							break;
-						}
-					break;
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
 						_hmdID = i;
 					break;
+					case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
+						//TODO: Trackers
+						break;
 				}
+			}
+
+			//Process Events
+			ProcessControllerEvents(_leftHandID);
+			ProcessControllerEvents(_rightHandID);
+		}
+		else
+			Init();
+	}
+	
+	VREvent VRManager::CheckStatesForMask(UInt64 previousEvt, UInt64 newEvt, UInt64 mask)
+	{
+		
+		if ((newEvt & mask) && !(previousEvt & mask))
+			return VREvent::Positive;
+		else if(!(newEvt & mask) && (previousEvt & mask))
+			return VREvent::Negative;
+
+		return VREvent::None;
+	}
+
+	//Used to iterate through every possible unique button
+	vr::EVRButtonId _possibleButtonsIds[15] = 
+	{
+		vr::EVRButtonId::k_EButton_System,
+		vr::EVRButtonId::k_EButton_ApplicationMenu,
+		vr::EVRButtonId::k_EButton_Grip,
+		vr::EVRButtonId::k_EButton_DPad_Left,
+		vr::EVRButtonId::k_EButton_DPad_Up,
+		vr::EVRButtonId::k_EButton_DPad_Right,
+		vr::EVRButtonId::k_EButton_DPad_Down,
+		vr::EVRButtonId::k_EButton_A,
+		vr::EVRButtonId::k_EButton_ProximitySensor,
+		vr::EVRButtonId::k_EButton_Axis0,
+		vr::EVRButtonId::k_EButton_Axis1,
+		vr::EVRButtonId::k_EButton_Axis2,
+		vr::EVRButtonId::k_EButton_Axis3,
+		vr::EVRButtonId::k_EButton_Axis4,
+		vr::EVRButtonId::k_EButton_Max
+	};
+
+	void VRManager::ProcessControllerEvents(int controllerID)
+	{
+		if (_vr)
+		{
+			vr::VRControllerState_t newState;
+			VREvent eventResult;
+			_vr->GetControllerState(controllerID, &newState, sizeof(vr::VRControllerState_t));
+			if (newState.unPacketNum != _controllerStates[controllerID].unPacketNum)
+			{
+				//We need to implement events here, using PollNextEvent could lead to skyrim losing events
+
+				//Button Pressed/Release
+				if (_controllerStates[controllerID].ulButtonPressed != newState.ulButtonPressed)
+				{
+					for (vr::EVRButtonId& button : _possibleButtonsIds)
+					{
+						eventResult = CheckStatesForMask(_controllerStates[controllerID].ulButtonPressed, newState.ulButtonPressed, vr::ButtonMaskFromId(button));
+						if (eventResult == VREvent::Positive)
+							DispatchVRButtonEvent(VREventType::Pressed, button);
+
+						if (eventResult == VREvent::Negative)
+							DispatchVRButtonEvent(VREventType::Released, button);
+					}
+				}
+
+				//Button Touched/Untouched
+				if (_controllerStates[controllerID].ulButtonTouched != newState.ulButtonTouched)
+				{
+					for (vr::EVRButtonId& button : _possibleButtonsIds)
+					{
+						eventResult = CheckStatesForMask(_controllerStates[controllerID].ulButtonTouched, newState.ulButtonTouched, vr::ButtonMaskFromId(button));
+						if (eventResult == VREvent::Positive)
+							DispatchVRButtonEvent(VREventType::Touched, button);
+
+						if (eventResult == VREvent::Negative)
+							DispatchVRButtonEvent(VREventType::Untouched, button);
+					}
+				}
+
+				_controllerStates[controllerID] = newState;
 			}
 		}
 	}
 
-	TrackedDevicePose_t* VRManager::GetHMDPose(bool renderPose) 
+	//Notifies all listeners that an event has occured
+	void VRManager::DispatchVRButtonEvent(VREventType eventType, vr::EVRButtonId button)
+	{
+		_vrButtonEventsListenersMutex.lock();
+		for (OnVRButtonEvent& listener : _vrButtonEventsListeners)
+		{
+			if (listener)
+				(*listener)(eventType, button);
+		}
+		_vrButtonEventsListenersMutex.unlock();
+	}
+
+	void VRManager::RegisterVRButtonListener(OnVRButtonEvent listener)
+	{
+		if (listener)
+		{
+			_vrButtonEventsListenersMutex.lock();
+			_vrButtonEventsListeners.remove(listener);
+			_vrButtonEventsListeners.push_back(listener);
+			_vrButtonEventsListenersMutex.unlock();
+		}
+	}
+
+	void VRManager::UnregisterVRButtonListener(OnVRButtonEvent listener)
+	{
+		if (listener)
+		{
+			_vrButtonEventsListenersMutex.lock();
+			_vrButtonEventsListeners.remove(listener);
+			_vrButtonEventsListenersMutex.unlock();
+		}
+	}
+
+	vr::TrackedDevicePose_t* VRManager::GetHMDPose(bool renderPose)
 	{ 
 		if (_hmdID < 0)
 			return NULL;
 		return renderPose ? &_renderPoses[_hmdID] : &_gamePoses[_hmdID];
 	}
-	TrackedDevicePose_t* VRManager::GetRightHandPose(bool renderPose)
+	vr::TrackedDevicePose_t* VRManager::GetRightHandPose(bool renderPose)
 	{
 		if (_rightHandID < 0)
 			return NULL;
 		return renderPose ? &_renderPoses[_rightHandID] : &_gamePoses[_rightHandID];
 	}
 
-	TrackedDevicePose_t* VRManager::GetLeftHandPose(bool renderPose)
+	vr::TrackedDevicePose_t* VRManager::GetLeftHandPose(bool renderPose)
 	{
 		if (_leftHandID < 0)
 			return NULL; 
 		return renderPose ? &_renderPoses[_leftHandID] : &_gamePoses[_leftHandID]; 
 	}
 
-	TrackedDevicePose_t* VRManager::GetPoseByDeviceEnum(VRDevice device)
+	vr::TrackedDevicePose_t* VRManager::GetPoseByDeviceEnum(VRDevice device)
 	{
-		TrackedDevicePose_t* requestedPose = NULL;
+		vr::TrackedDevicePose_t* requestedPose = NULL;
 		switch (device)
 		{
 			case VRDevice::HMD:

@@ -1,5 +1,6 @@
 #include "PapyrusVR.h"
 
+using namespace vr;
 namespace PapyrusVR 
 {
 	//OpenVR Hook
@@ -7,8 +8,13 @@ namespace PapyrusVR
 	BranchTrampoline		l_LocalBranchTrampoline;
 
 	//Custom Pose Event
+	BSFixedString poseUpdateEventName("OnPosesUpdate");
 	RegistrationSetHolder<TESForm*>				g_posesUpdateEventRegs;
 	PoseUpdateListeners							g_poseUpdateListeners;
+
+	//Custom Button Events
+	BSFixedString vrButtonEventName("OnVRButtonEvent");
+	RegistrationSetHolder<TESForm*>				g_vrButtonEventRegs;
 
 	//API
 	std::mutex					listenersMutex; 
@@ -33,6 +39,38 @@ namespace PapyrusVR
 
 		private:
 			BSFixedString	eventName;
+		};
+
+		template <typename T> void SetVMValue(VMValue * val, T arg)
+		{
+			VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
+			PackValue(val, &arg, registry);
+		}
+		template <> void SetVMValue<SInt32>(VMValue * val, SInt32 arg) { val->SetInt(arg); }
+		class VRButtonEventFunctor2 : public IFunctionArguments
+		{
+		public:
+			VRButtonEventFunctor2(BSFixedString & a_eventName, SInt32 a_eventType, SInt32 a_buttonId)
+				: eventName(a_eventName.data), eventType(a_eventType), buttonId(a_buttonId) {}
+
+			virtual bool Copy(Output * dst) 
+			{ 
+				dst->Resize(2);
+				SetVMValue(dst->Get(0), eventType);
+				SetVMValue(dst->Get(1), buttonId);
+				return true; 
+			}
+
+			void operator() (const EventRegistration<TESForm*> & reg)
+			{
+				VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
+				registry->QueueEvent(reg.handle, &eventName, this);
+			}
+
+		private:
+			SInt32				eventType;
+			SInt32				buttonId;
+			BSFixedString		eventName;
 		};
 	#pragma endregion
 
@@ -109,6 +147,38 @@ namespace PapyrusVR
 				_MESSAGE("%d unregistered for PoseUpdates", thisForm->formID);
 		}
 
+
+		void RegisterForVRButtonEvents(StaticFunctionTag *base, TESForm * thisForm)
+		{
+			_MESSAGE("RegisterForVRButtonEvents");
+			if (!thisForm)
+			{
+				_MESSAGE("Called RegisterForVRButtonEvents from NULL form!");
+				return;
+			}
+
+			g_vrButtonEventRegs.Register(thisForm->GetFormType(), thisForm);
+
+
+			if (thisForm->formID)
+				_MESSAGE("%d registered for VRButtonEvents", thisForm->formID);
+		}
+
+		void UnregisterForVRButtonEvents(StaticFunctionTag *base, TESForm * thisForm)
+		{
+			_MESSAGE("UnregisterForVRButtonEvents");
+			if (!thisForm)
+			{
+				_MESSAGE("Called UnregisterForVRButtonEvents from NULL form!");
+				return;
+			}
+
+			g_vrButtonEventRegs.Unregister(thisForm->GetFormType(), thisForm);
+
+			if (thisForm->formID)
+				_MESSAGE("%d unregistered for VRButtonEvents", thisForm->formID);
+		}
+
 		//Used for debugging
 		std::clock_t start = clock();
 		void TimeSinceLastCall(StaticFunctionTag* base)
@@ -124,7 +194,6 @@ namespace PapyrusVR
 	#pragma region OpenVR Hooks
 
 		//SkyrimVR+0xC50C69
-		BSFixedString eventName("OnPosesUpdate");
 		clock_t lastFrame = clock();
 		clock_t thisFrame;
 		double deltaTime = 0.0f;
@@ -148,7 +217,7 @@ namespace PapyrusVR
 			//WARNING: Disabled cause this will currently freeze the game every 90 seconds
 			//if (g_posesUpdateEventRegs.m_data.size() > 0)
 			//	g_posesUpdateEventRegs.ForEach(
-			//		EventQueueFunctor0(eventName)
+			//		EventQueueFunctor0(poseUpdateEventName)
 			//	);
 		}
 
@@ -254,6 +323,16 @@ namespace PapyrusVR
 		}
 	#pragma endregion
 
+	void OnVRButtonEvent(VREventType eventType, EVRButtonId buttonId)
+	{
+		_MESSAGE("Dispatching eventType %d for button with ID: %d", eventType, buttonId);
+		//Notify Papyrus scripts
+		if (g_vrButtonEventRegs.m_data.size() > 0)
+			g_vrButtonEventRegs.ForEach(
+				VRButtonEventFunctor2(vrButtonEventName, eventType, buttonId)
+			);
+	}
+
 	//Entry Point
 	bool RegisterFuncs(VMClassRegistry* registry) 
 	{
@@ -266,6 +345,8 @@ namespace PapyrusVR
 		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetSkyrimDevicePosition_Native", "PapyrusVR", PapyrusVR::GetSkyrimDevicePosition, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("RegisterForPoseUpdates", "PapyrusVR", PapyrusVR::RegisterForPoseUpdates, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("UnregisterForPoseUpdates", "PapyrusVR", PapyrusVR::UnregisterForPoseUpdates, registry));
+		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("RegisterForVRButtonEvents", "PapyrusVR", PapyrusVR::RegisterForVRButtonEvents, registry));
+		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("UnregisterForVRButtonEvents", "PapyrusVR", PapyrusVR::UnregisterForVRButtonEvents, registry));
 		registry->RegisterFunction(new NativeFunction0 <StaticFunctionTag, void>("TimeSinceLastCall", "PapyrusVR", PapyrusVR::TimeSinceLastCall, registry)); //Debug function
 
 		_MESSAGE("Creating trampoline");
@@ -274,6 +355,9 @@ namespace PapyrusVR
 			_MESSAGE("Can't create local branch trampoline!");
 			return false;
 		}
+
+		_MESSAGE("Registering for VR Button Events");
+		VRManager::GetInstance().RegisterVRButtonListener(PapyrusVR::OnVRButtonEvent);
 
 		_MESSAGE("Hooking into OpenVR calls");
 		l_LocalBranchTrampoline.Write5Call(OpenVR_Call, GetFnAddr(&PapyrusVR::OnVRUpdate));
