@@ -47,17 +47,18 @@ namespace PapyrusVR
 			PackValue(val, &arg, registry);
 		}
 		template <> void SetVMValue<SInt32>(VMValue * val, SInt32 arg) { val->SetInt(arg); }
-		class VRButtonEventFunctor2 : public IFunctionArguments
+		class VRButtonEventFunctor3 : public IFunctionArguments
 		{
 		public:
-			VRButtonEventFunctor2(BSFixedString & a_eventName, SInt32 a_eventType, SInt32 a_buttonId)
-				: eventName(a_eventName.data), eventType(a_eventType), buttonId(a_buttonId) {}
+			VRButtonEventFunctor3(BSFixedString & a_eventName, SInt32 a_eventType, SInt32 a_buttonId, SInt32 a_deviceId)
+				: eventName(a_eventName.data), eventType(a_eventType), buttonId(a_buttonId), deviceId(a_deviceId){}
 
 			virtual bool Copy(Output * dst) 
 			{ 
 				dst->Resize(2);
 				SetVMValue(dst->Get(0), eventType);
 				SetVMValue(dst->Get(1), buttonId);
+				SetVMValue(dst->Get(2), deviceId);
 				return true; 
 			}
 
@@ -70,6 +71,7 @@ namespace PapyrusVR
 		private:
 			SInt32				eventType;
 			SInt32				buttonId;
+			SInt32				deviceId;
 			BSFixedString		eventName;
 		};
 	#pragma endregion
@@ -323,13 +325,13 @@ namespace PapyrusVR
 		}
 	#pragma endregion
 
-	void OnVRButtonEvent(VREventType eventType, EVRButtonId buttonId)
+	void OnVRButtonEvent(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId)
 	{
 		_MESSAGE("Dispatching eventType %d for button with ID: %d", eventType, buttonId);
 		//Notify Papyrus scripts
 		if (g_vrButtonEventRegs.m_data.size() > 0)
 			g_vrButtonEventRegs.ForEach(
-				VRButtonEventFunctor2(vrButtonEventName, eventType, buttonId)
+				VRButtonEventFunctor3(vrButtonEventName, eventType, buttonId, deviceId)
 			);
 	}
 

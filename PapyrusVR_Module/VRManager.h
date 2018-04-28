@@ -34,7 +34,7 @@ namespace PapyrusVR
 		int _leftHandID = -1;
 
 		VREvent CheckStatesForMask(UInt64 previousEvt, UInt64 newEvt, UInt64 mask);
-		void DispatchVRButtonEvent(VREventType eventType, vr::EVRButtonId button);
+		void DispatchVRButtonEvent(VREventType eventType, vr::EVRButtonId button, VRDevice device);
 	public:
 		VRManager(VRManager const&) = delete;
 		void operator=(VRManager const&) = delete;

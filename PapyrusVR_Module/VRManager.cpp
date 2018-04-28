@@ -90,6 +90,7 @@ namespace PapyrusVR
 	{
 		if (_vr)
 		{
+			VRDevice currentDevice = controllerID == _leftHandID ? VRDevice::LeftController : VRDevice::RightController;
 			vr::VRControllerState_t newState;
 			VREvent eventResult;
 			_vr->GetControllerState(controllerID, &newState, sizeof(vr::VRControllerState_t));
@@ -104,10 +105,10 @@ namespace PapyrusVR
 					{
 						eventResult = CheckStatesForMask(_controllerStates[controllerID].ulButtonPressed, newState.ulButtonPressed, vr::ButtonMaskFromId(button));
 						if (eventResult == VREvent::Positive)
-							DispatchVRButtonEvent(VREventType::Pressed, button);
+							DispatchVRButtonEvent(VREventType::Pressed, button, currentDevice);
 
 						if (eventResult == VREvent::Negative)
-							DispatchVRButtonEvent(VREventType::Released, button);
+							DispatchVRButtonEvent(VREventType::Released, button, currentDevice);
 					}
 				}
 
@@ -118,10 +119,10 @@ namespace PapyrusVR
 					{
 						eventResult = CheckStatesForMask(_controllerStates[controllerID].ulButtonTouched, newState.ulButtonTouched, vr::ButtonMaskFromId(button));
 						if (eventResult == VREvent::Positive)
-							DispatchVRButtonEvent(VREventType::Touched, button);
+							DispatchVRButtonEvent(VREventType::Touched, button, currentDevice);
 
 						if (eventResult == VREvent::Negative)
-							DispatchVRButtonEvent(VREventType::Untouched, button);
+							DispatchVRButtonEvent(VREventType::Untouched, button, currentDevice);
 					}
 				}
 
@@ -131,13 +132,13 @@ namespace PapyrusVR
 	}
 
 	//Notifies all listeners that an event has occured
-	void VRManager::DispatchVRButtonEvent(VREventType eventType, vr::EVRButtonId button)
+	void VRManager::DispatchVRButtonEvent(VREventType eventType, vr::EVRButtonId button, VRDevice device)
 	{
 		_vrButtonEventsListenersMutex.lock();
 		for (OnVRButtonEvent& listener : _vrButtonEventsListeners)
 		{
 			if (listener)
-				(*listener)(eventType, button);
+				(*listener)(eventType, button, device);
 		}
 		_vrButtonEventsListenersMutex.unlock();
 	}

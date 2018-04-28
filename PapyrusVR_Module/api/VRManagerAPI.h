@@ -24,7 +24,7 @@ enum VREventType
 	Released = 3
 };
 
-typedef void(*OnVRButtonEvent)(VREventType, vr::EVRButtonId);
+typedef void(*OnVRButtonEvent)(VREventType, vr::EVRButtonId, VRDevice);
 
 class VRManagerAPI
 {

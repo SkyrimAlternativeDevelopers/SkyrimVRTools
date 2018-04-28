@@ -88,5 +88,5 @@ float[] Function GetSkyrimDevicePosition(int DeviceType) global
 EndFunction
 
 ;Events
-Event OnVRButtonEvent(int eventType, int buttonId)
+Event OnVRButtonEvent(int eventType, int buttonId, int deviceId)
 EndEvent
