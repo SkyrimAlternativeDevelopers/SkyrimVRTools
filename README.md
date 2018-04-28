@@ -1,4 +1,5 @@
 # PapyrusVR
+## Current SKSE Target Version: 2.0.8
 Initial SKSE Plugin to expose OpenVR to Papyrus
 
 #TODO
