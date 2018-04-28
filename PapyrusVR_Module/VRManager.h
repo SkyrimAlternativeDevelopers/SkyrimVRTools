@@ -36,5 +36,6 @@ namespace PapyrusVR
 		TrackedDevicePose_t* GetHMDPose(bool renderPose = true);
 		TrackedDevicePose_t* GetRightHandPose(bool renderPose = true);
 		TrackedDevicePose_t* GetLeftHandPose(bool renderPose = true);
+		TrackedDevicePose_t* GetPoseByDeviceEnum(VRDevice device);
 	};
 }

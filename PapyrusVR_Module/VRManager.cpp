@@ -74,4 +74,22 @@ namespace PapyrusVR
 			return NULL; 
 		return renderPose ? &_renderPoses[_leftHandID] : &_gamePoses[_leftHandID]; 
 	}
+
+	TrackedDevicePose_t* VRManager::GetPoseByDeviceEnum(VRDevice device)
+	{
+		TrackedDevicePose_t* requestedPose = NULL;
+		switch (device)
+		{
+			case VRDevice::HMD:
+				requestedPose = GetHMDPose();
+				break;
+			case VRDevice::RightController:
+				requestedPose = GetRightHandPose();
+				break;
+			case VRDevice::LeftController:
+				requestedPose = GetLeftHandPose();
+				break;
+		}
+		return requestedPose;
+	}
 }

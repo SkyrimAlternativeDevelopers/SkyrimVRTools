@@ -37,72 +37,48 @@ namespace PapyrusVR
 	#pragma endregion
 
 	#pragma region Papyrus Native Functions
-
-		void GetTrackedDevicePoseByID(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
-		{
-			_MESSAGE("GetTrackedDevicePoseByID");
-			TrackedDevicePose_t* requestedPose;
-			switch (deviceEnum)
+		#pragma region SteamVR Coordinates
+			void GetSteamVRDeviceRotation(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
 			{
-				case TrackedDevice::HMD:
-					requestedPose = VRManager::GetInstance().GetHMDPose();
-					break;
-				case TrackedDevice::RightController:
-					requestedPose = VRManager::GetInstance().GetRightHandPose();
-					break;
-				case TrackedDevice::LeftController:
-					requestedPose = VRManager::GetInstance().GetLeftHandPose();
-					break;
+				_MESSAGE("GetSteamVRDeviceRotation");
+				CopyPoseToVMArray(deviceEnum, &returnValues, PoseParam::Rotation);
 			}
-		
-			//Pose exists
-			if (requestedPose)
+
+			void GetSteamVRDeviceQRotation(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
 			{
-				HmdQuaternion_t deviceRotation = OpenVRUtils::GetRotation(requestedPose->mDeviceToAbsoluteTracking);
-				HmdVector3_t devicePosition = OpenVRUtils::GetPosition(requestedPose->mDeviceToAbsoluteTracking);
-
-				float number;
-
-				//Position
-				//Set X
-				returnValues.Get(&number, 0);
-				number = devicePosition.v[0];
-				returnValues.Set(&number, 0);
-
-				//Set Y
-				returnValues.Get(&number, 1);
-				number = devicePosition.v[1];
-				returnValues.Set(&number, 1);
-
-				//Set Z
-				returnValues.Get(&number, 2);
-				number = devicePosition.v[2];
-				returnValues.Set(&number, 2);
-
-				//Rotation
-				//Set X
-				returnValues.Get(&number, 3);
-				number = deviceRotation.x;
-				returnValues.Set(&number, 3);
-
-				//Set Y
-				returnValues.Get(&number, 4);
-				number = deviceRotation.y;
-				returnValues.Set(&number, 4);
-
-				//Set Z
-				returnValues.Get(&number, 5);
-				number = deviceRotation.z;
-				returnValues.Set(&number, 5);
-
-				//Set W
-				returnValues.Get(&number, 6);
-				number = deviceRotation.w;
-				returnValues.Set(&number, 6);
+				_MESSAGE("GetSteamVRDeviceQRotation");
+				CopyPoseToVMArray(deviceEnum, &returnValues, PoseParam::QRotation);
 			}
-		}
 
-		void RegisterForPoseUpdates(StaticFunctionTag *base,TESForm * thisForm)
+			void GetSteamVRDevicePosition(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
+			{
+				_MESSAGE("GetSteamVRDevicePosition");
+				CopyPoseToVMArray(deviceEnum, &returnValues, PoseParam::Position);
+
+			}
+		#pragma endregion
+
+		#pragma region Skyrim Coordinates
+			void GetSkyrimDeviceRotation(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
+			{
+				_MESSAGE("GetSkyrimDeviceRotation");
+				CopyPoseToVMArray(deviceEnum, &returnValues, PoseParam::Rotation, true);
+			}
+
+			void GetSkyrimDeviceQRotation(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
+			{
+				_MESSAGE("GetSkyrimDeviceQRotation");
+				CopyPoseToVMArray(deviceEnum, &returnValues, PoseParam::QRotation, true);
+			}
+
+			void GetSkyrimDevicePosition(StaticFunctionTag *base, UInt32 deviceEnum, VMArray<float> returnValues)
+			{
+				_MESSAGE("GetSkyrimDevicePosition");
+				CopyPoseToVMArray(deviceEnum, &returnValues, PoseParam::Position, true);
+			}
+		#pragma endregion
+
+		void RegisterForPoseUpdates(StaticFunctionTag *base,	TESForm* thisForm)
 		{
 			_MESSAGE("RegisterForPoseUpdates");
 			if (!thisForm)
@@ -118,7 +94,7 @@ namespace PapyrusVR
 				_MESSAGE("%d registered for PoseUpdates", thisForm->formID);
 		}
 
-		void UnregisterForPoseUpdates(StaticFunctionTag *base,TESForm * thisForm)
+		void UnregisterForPoseUpdates(StaticFunctionTag *base,	TESForm* thisForm)
 		{
 			_MESSAGE("UnregisterForPoseUpdates");
 			if (!thisForm)
@@ -202,9 +178,9 @@ namespace PapyrusVR
 			{
 				if (message->type == SKSEMessagingInterface::kMessage_PostPostLoad)
 				{
-					_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
 					if (g_messagingInterface && g_pluginHandle)
 					{
+						_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
 						apiMessage.GetVRManager = GetVRManager;
 						apiMessage.RegisterPoseUpdateListener = RegisterPoseUpdateListener;
 
@@ -232,11 +208,62 @@ namespace PapyrusVR
 		}
 	#pragma endregion
 
+	#pragma region Utility Methods
+		void CopyPoseToVMArray(UInt32 deviceType, VMArray<float>* resultArray, PoseParam parameter, bool skyrimWorldSpace)
+		{
+			TrackedDevicePose_t* requestedPose = VRManager::GetInstance().GetPoseByDeviceEnum((VRDevice)deviceType);
+
+			//Pose exists
+			if (requestedPose)
+			{
+				HmdMatrix34_t matrix = requestedPose->mDeviceToAbsoluteTracking;
+
+				if (parameter == PoseParam::Position)
+				{
+					//Position
+					HmdVector3_t devicePosition = OpenVRUtils::GetPosition(&(requestedPose->mDeviceToAbsoluteTracking));
+
+					//Really dumb way to do it, just for testing
+					if (skyrimWorldSpace)
+					{
+						NiAVObject* playerNode = (*g_thePlayer)->GetNiNode();
+						devicePosition.v[0] += playerNode->m_worldTransform.pos.x;
+						devicePosition.v[1] += playerNode->m_worldTransform.pos.y;
+						devicePosition.v[2] += playerNode->m_worldTransform.pos.z;
+					}
+
+					OpenVRUtils::CopyVector3ToVMArray(&devicePosition, resultArray);
+				}
+				else
+				{
+					HmdQuaternion_t quatRotation = OpenVRUtils::GetRotation(&(requestedPose->mDeviceToAbsoluteTracking));
+
+					if (parameter == PoseParam::Rotation)
+					{
+						//Euler
+						HmdVector3_t deviceRotation = OpenVRUtils::QuatToEuler(&quatRotation);
+						OpenVRUtils::CopyVector3ToVMArray(&deviceRotation, resultArray);
+					}
+					else
+					{
+						//Quaternion
+						OpenVRUtils::CopyQuaternionToVMArray(&quatRotation, resultArray);
+					}
+				}
+			}
+		}
+	#pragma endregion
+
 	//Entry Point
 	bool RegisterFuncs(VMClassRegistry* registry) 
 	{
 		_MESSAGE("Registering native functions...");
-		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetTrackedDevicePoseByIDNative", "PapyrusVR", PapyrusVR::GetTrackedDevicePoseByID, registry));
+		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetSteamVRDeviceRotation_Native", "PapyrusVR", PapyrusVR::GetSteamVRDeviceRotation, registry));
+		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetSteamVRDeviceQRotation_Native", "PapyrusVR", PapyrusVR::GetSteamVRDeviceQRotation, registry));
+		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetSteamVRDevicePosition_Native", "PapyrusVR", PapyrusVR::GetSteamVRDevicePosition, registry));
+		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetSkyrimDeviceRotation_Native", "PapyrusVR", PapyrusVR::GetSkyrimDeviceRotation, registry));
+		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetSkyrimDeviceQRotation_Native", "PapyrusVR", PapyrusVR::GetSkyrimDeviceQRotation, registry));
+		registry->RegisterFunction(new NativeFunction2 <StaticFunctionTag, void, UInt32, VMArray<float>>("GetSkyrimDevicePosition_Native", "PapyrusVR", PapyrusVR::GetSkyrimDevicePosition, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("RegisterForPoseUpdates", "PapyrusVR", PapyrusVR::RegisterForPoseUpdates, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("UnregisterForPoseUpdates", "PapyrusVR", PapyrusVR::UnregisterForPoseUpdates, registry));
 		registry->RegisterFunction(new NativeFunction0 <StaticFunctionTag, void>("TimeSinceLastCall", "PapyrusVR", PapyrusVR::TimeSinceLastCall, registry)); //Debug function
