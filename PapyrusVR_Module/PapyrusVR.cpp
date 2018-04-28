@@ -55,7 +55,7 @@ namespace PapyrusVR
 
 			virtual bool Copy(Output * dst) 
 			{ 
-				dst->Resize(2);
+				dst->Resize(3);
 				SetVMValue(dst->Get(0), eventType);
 				SetVMValue(dst->Get(1), buttonId);
 				SetVMValue(dst->Get(2), deviceId);
