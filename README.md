@@ -174,3 +174,28 @@ extern "C" {
 
 };
 ```
+
+##Papyrus Script Quest Example
+```Papyrus
+Scriptname MyFancyQuest extends Quest
+
+Function Init()
+    PapyrusVR vr
+    Debug.Notification("The mod has been installed")
+    Actor player = Game.GetPlayer()
+    float[] pose = PapyrusVR.GetSkyrimDevicePosition(vr.EDeviceTypeHMD)
+    Debug.Notification("Pose X: " + pose[0])
+    Debug.Notification("Pose Y: " + pose[1])
+    Debug.Notification("Pose Z: " + pose[2])
+    Debug.Notification("Player X: " + player.X)
+    Debug.Notification("Player Y: " + player.Y)
+    Debug.Notification("Player Z: " + player.Z)
+    Debug.Notification("Registering for VR Button events!")
+    PapyrusVR.RegisterForVRButtonEvents(Game.GetForm(GetFormID()))
+    Debug.Notification("The mod has finished initializing")
+EndFunction
+
+Event OnVRButtonEvent(int buttonEvent, int buttonId, int deviceId)
+    Debug.Notification("Got event from device" + deviceId + " with id " + buttonEvent + " for button " + buttonId)
+EndEvent
+```
