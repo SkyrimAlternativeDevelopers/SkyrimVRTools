@@ -27,7 +27,7 @@ namespace PapyrusVR
 	{
 		if (_compositor)
 		{
-			vr::VRCompositorError error = _compositor->GetLastPoses(_renderPoses, vr::k_unMaxTrackedDeviceCount, _gamePoses, vr::k_unMaxTrackedDeviceCount);
+			vr::VRCompositorError error = _compositor->GetLastPoses((vr::TrackedDevicePose_t*)_renderPoses, vr::k_unMaxTrackedDeviceCount, (vr::TrackedDevicePose_t*)_gamePoses, vr::k_unMaxTrackedDeviceCount);
 			if (error && error != vr::EVRCompositorError::VRCompositorError_None)
 				_MESSAGE("Error while retriving game poses!");
 
@@ -105,10 +105,10 @@ namespace PapyrusVR
 					{
 						eventResult = CheckStatesForMask(_controllerStates[controllerID].ulButtonPressed, newState.ulButtonPressed, vr::ButtonMaskFromId(button));
 						if (eventResult == VREvent::Positive)
-							DispatchVRButtonEvent(VREventType::Pressed, button, currentDevice);
+							DispatchVRButtonEvent(VREventType::Pressed, (EVRButtonId)button, currentDevice);
 
 						if (eventResult == VREvent::Negative)
-							DispatchVRButtonEvent(VREventType::Released, button, currentDevice);
+							DispatchVRButtonEvent(VREventType::Released, (EVRButtonId)button, currentDevice);
 					}
 				}
 
@@ -119,10 +119,10 @@ namespace PapyrusVR
 					{
 						eventResult = CheckStatesForMask(_controllerStates[controllerID].ulButtonTouched, newState.ulButtonTouched, vr::ButtonMaskFromId(button));
 						if (eventResult == VREvent::Positive)
-							DispatchVRButtonEvent(VREventType::Touched, button, currentDevice);
+							DispatchVRButtonEvent(VREventType::Touched, (EVRButtonId)button, currentDevice);
 
 						if (eventResult == VREvent::Negative)
-							DispatchVRButtonEvent(VREventType::Untouched, button, currentDevice);
+							DispatchVRButtonEvent(VREventType::Untouched, (EVRButtonId)button, currentDevice);
 					}
 				}
 
@@ -132,7 +132,7 @@ namespace PapyrusVR
 	}
 
 	//Notifies all listeners that an event has occured
-	void VRManager::DispatchVRButtonEvent(VREventType eventType, vr::EVRButtonId button, VRDevice device)
+	void VRManager::DispatchVRButtonEvent(VREventType eventType, EVRButtonId button, VRDevice device)
 	{
 		_vrButtonEventsListenersMutex.lock();
 		for (OnVRButtonEvent& listener : _vrButtonEventsListeners)
@@ -164,29 +164,29 @@ namespace PapyrusVR
 		}
 	}
 
-	vr::TrackedDevicePose_t* VRManager::GetHMDPose(bool renderPose)
+	TrackedDevicePose* VRManager::GetHMDPose(bool renderPose)
 	{ 
 		if (_hmdID < 0)
 			return NULL;
 		return renderPose ? &_renderPoses[_hmdID] : &_gamePoses[_hmdID];
 	}
-	vr::TrackedDevicePose_t* VRManager::GetRightHandPose(bool renderPose)
+	TrackedDevicePose* VRManager::GetRightHandPose(bool renderPose)
 	{
 		if (_rightHandID < 0)
 			return NULL;
 		return renderPose ? &_renderPoses[_rightHandID] : &_gamePoses[_rightHandID];
 	}
 
-	vr::TrackedDevicePose_t* VRManager::GetLeftHandPose(bool renderPose)
+	TrackedDevicePose* VRManager::GetLeftHandPose(bool renderPose)
 	{
 		if (_leftHandID < 0)
 			return NULL; 
 		return renderPose ? &_renderPoses[_leftHandID] : &_gamePoses[_leftHandID]; 
 	}
 
-	vr::TrackedDevicePose_t* VRManager::GetPoseByDeviceEnum(VRDevice device)
+	TrackedDevicePose* VRManager::GetPoseByDeviceEnum(VRDevice device)
 	{
-		vr::TrackedDevicePose_t* requestedPose = NULL;
+		TrackedDevicePose* requestedPose = NULL;
 		switch (device)
 		{
 			case VRDevice::HMD:

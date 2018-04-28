@@ -22,9 +22,11 @@
 #include "common/IPrefix.h"
 
 #include "api/PapyrusVRAPI.h"
+#include "api/PapyrusVRTypes.h"
+#include "api/OpenVRTypes.h"
 #include "api/VRManagerAPI.h"
 
-#include "OpenVRUtils.h"
+#include "api/utils/OpenVRUtils.h"
 #include "VRManager.h"
 
 enum PoseParam
@@ -79,7 +81,7 @@ namespace PapyrusVR
 
 	bool RegisterFuncs(VMClassRegistry* registry);
 
-	void OnVRButtonEvent(VREventType eventType, vr::EVRButtonId buttonId);
+	void OnVRButtonEventRecived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId);
 
 	void OnVRUpdate(); //Called once every pose update by the rendering thread
 

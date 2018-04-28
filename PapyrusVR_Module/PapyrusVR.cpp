@@ -1,6 +1,5 @@
 #include "PapyrusVR.h"
 
-using namespace vr;
 namespace PapyrusVR 
 {
 	//OpenVR Hook
@@ -282,37 +281,37 @@ namespace PapyrusVR
 	#pragma region Utility Methods
 		void CopyPoseToVMArray(UInt32 deviceType, VMArray<float>* resultArray, PoseParam parameter, bool skyrimWorldSpace)
 		{
-			TrackedDevicePose_t* requestedPose = VRManager::GetInstance().GetPoseByDeviceEnum((VRDevice)deviceType);
+			TrackedDevicePose* requestedPose = VRManager::GetInstance().GetPoseByDeviceEnum((VRDevice)deviceType);
 
 			//Pose exists
 			if (requestedPose)
 			{
-				HmdMatrix34_t matrix = requestedPose->mDeviceToAbsoluteTracking;
+				Matrix34 matrix = requestedPose->mDeviceToAbsoluteTracking;
 
 				if (parameter == PoseParam::Position)
 				{
 					//Position
-					HmdVector3_t devicePosition = OpenVRUtils::GetPosition(&(requestedPose->mDeviceToAbsoluteTracking));
+					Vector3 devicePosition = OpenVRUtils::GetPosition(&(requestedPose->mDeviceToAbsoluteTracking));
 
 					//Really dumb way to do it, just for testing
 					if (skyrimWorldSpace)
 					{
 						NiAVObject* playerNode = (*g_thePlayer)->GetNiNode();
-						devicePosition.v[0] += playerNode->m_worldTransform.pos.x;
-						devicePosition.v[1] += playerNode->m_worldTransform.pos.y;
-						devicePosition.v[2] += playerNode->m_worldTransform.pos.z;
+						devicePosition.x += playerNode->m_worldTransform.pos.x;
+						devicePosition.y += playerNode->m_worldTransform.pos.y;
+						devicePosition.z += playerNode->m_worldTransform.pos.z;
 					}
 
 					OpenVRUtils::CopyVector3ToVMArray(&devicePosition, resultArray);
 				}
 				else
 				{
-					HmdQuaternion_t quatRotation = OpenVRUtils::GetRotation(&(requestedPose->mDeviceToAbsoluteTracking));
+					Quaternion quatRotation = OpenVRUtils::GetRotation(&(requestedPose->mDeviceToAbsoluteTracking));
 
 					if (parameter == PoseParam::Rotation)
 					{
 						//Euler
-						HmdVector3_t deviceRotation = OpenVRUtils::QuatToEuler(&quatRotation);
+						Vector3 deviceRotation = OpenVRUtils::QuatToEuler(&quatRotation);
 						OpenVRUtils::CopyVector3ToVMArray(&deviceRotation, resultArray);
 					}
 					else
@@ -325,7 +324,7 @@ namespace PapyrusVR
 		}
 	#pragma endregion
 
-	void OnVRButtonEvent(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId)
+	void OnVRButtonEventRecived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId)
 	{
 		_MESSAGE("Dispatching eventType %d for button with ID: %d", eventType, buttonId);
 		//Notify Papyrus scripts
@@ -359,7 +358,7 @@ namespace PapyrusVR
 		}
 
 		_MESSAGE("Registering for VR Button Events");
-		VRManager::GetInstance().RegisterVRButtonListener(PapyrusVR::OnVRButtonEvent);
+		VRManager::GetInstance().RegisterVRButtonListener(PapyrusVR::OnVRButtonEventRecived);
 
 		_MESSAGE("Hooking into OpenVR calls");
 		l_LocalBranchTrampoline.Write5Call(OpenVR_Call, GetFnAddr(&PapyrusVR::OnVRUpdate));

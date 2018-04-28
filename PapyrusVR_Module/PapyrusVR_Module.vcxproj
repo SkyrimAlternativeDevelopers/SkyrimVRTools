@@ -122,15 +122,17 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="api\utils\OpenVRUtils.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="OpenVRUtils.cpp" />
     <ClCompile Include="PapyrusVR.cpp" />
     <ClCompile Include="VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="api\OpenVRTypes.h" />
     <ClInclude Include="api\PapyrusVRAPI.h" />
+    <ClInclude Include="api\PapyrusVRTypes.h" />
+    <ClInclude Include="api\utils\OpenVRUtils.h" />
     <ClInclude Include="api\VRManagerAPI.h" />
-    <ClInclude Include="OpenVRUtils.h" />
     <ClInclude Include="PapyrusVR.h" />
     <ClInclude Include="VRManager.h" />
   </ItemGroup>
