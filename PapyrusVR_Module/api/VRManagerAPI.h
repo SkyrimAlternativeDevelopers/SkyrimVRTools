@@ -5,6 +5,7 @@
 namespace PapyrusVR
 {
 	typedef void(*OnVRButtonEvent)(VREventType, EVRButtonId, VRDevice);
+	typedef void(*OnVROverlapEvent)(VROverlapEvent, UInt32, VRDevice);
 
 	class VRManagerAPI
 	{
@@ -14,9 +15,15 @@ namespace PapyrusVR
 		virtual void RegisterVRButtonListener(OnVRButtonEvent listener) = 0;
 		virtual void UnregisterVRButtonListener(OnVRButtonEvent listener) = 0;
 
+		virtual void RegisterVROverlapListener(OnVROverlapEvent listener) = 0;
+		virtual void UnregisterVROverlapListener(OnVROverlapEvent listener) = 0;
+
+		virtual UInt32 CreateLocalOverlapSphere(float radius, Matrix34* transform, VRDevice attachedDevice = VRDevice::VRDevice_Unknown) = 0;
+		virtual void DestroyLocalOverlapObject(UInt32 overlapObjectHandle) = 0;
+
 		virtual TrackedDevicePose* GetHMDPose(bool renderPose = true) = 0;
 		virtual TrackedDevicePose* GetRightHandPose(bool renderPose = true) = 0;
 		virtual TrackedDevicePose* GetLeftHandPose(bool renderPose = true) = 0;
-		virtual TrackedDevicePose* GetPoseByDeviceEnum(VRDevice device) = 0;
+		virtual TrackedDevicePose* GetPoseByDeviceEnum(VRDevice device, bool renderPose = true) = 0;
 	};
 }

@@ -21,6 +21,9 @@ specific prior written permission.
 
 namespace PapyrusVR
 {
+	static const uint32_t k_unTrackedDeviceIndex_Hmd = 0;
+	static const uint32_t k_unMaxTrackedDeviceCount = 16;
+
 	enum ETrackingResult //OpenVR
 	{
 		TrackingResult_Uninitialized = 1,

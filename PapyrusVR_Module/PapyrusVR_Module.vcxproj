@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -122,12 +122,17 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="api\collisions\LocalOverlapObject.cpp" />
+    <ClCompile Include="api\collisions\Sphere.cpp" />
     <ClCompile Include="api\utils\OpenVRUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PapyrusVR.cpp" />
     <ClCompile Include="VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="api\collisions\IShape.h" />
+    <ClInclude Include="api\collisions\LocalOverlapObject.h" />
+    <ClInclude Include="api\collisions\Sphere.h" />
     <ClInclude Include="api\OpenVRTypes.h" />
     <ClInclude Include="api\PapyrusVRAPI.h" />
     <ClInclude Include="api\PapyrusVRTypes.h" />

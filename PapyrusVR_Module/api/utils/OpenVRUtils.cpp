@@ -59,34 +59,118 @@ namespace PapyrusVR
 		return result;
 	}
 
-	//Matrix Operations
-	Matrix34 OpenVRUtils::CreateTranslationMatrix(Vector3* translation)
-	{
-		Matrix34 result;
+	#pragma region Matrix Operations
 
-		return result;
-	}
+		Matrix34 OpenVRUtils::CreateTransformMatrix(Vector3* translation, Vector3* euler)
+		{
+			Matrix34 result;
+			OpenVRUtils::SetRotationMatrix(&result, euler);
+			OpenVRUtils::SetTranslationMatrix(&result, translation);
+			return result;
+		}
 
-	Matrix34 OpenVRUtils::CreateScaleMatrix(Vector3* scale)
-	{
-		Matrix34 result;
+		Matrix34 OpenVRUtils::CreateTransformMatrix(Vector3* translation, Quaternion* quaternion)
+		{
+			Matrix34 result;
+			OpenVRUtils::SetRotationMatrix(&result, quaternion);
+			OpenVRUtils::SetTranslationMatrix(&result, translation);
+			return result;
+		}
 
-		return result;
-	}
+		Matrix34 OpenVRUtils::CreateTranslationMatrix(Vector3* translation)
+		{
+			Matrix34 result;
+			OpenVRUtils::SetTranslationMatrix(&result, translation);
+			return result;
+		}
 
-	Matrix34 OpenVRUtils::CreateRotationMatrix(Quaternion* quaternion)
-	{
-		Matrix34 result;
+		Matrix34 OpenVRUtils::CreateScaleMatrix(Vector3* scale)
+		{
+			Matrix34 result;
+			OpenVRUtils::SetScaleMatrix(&result, scale);
+			return result;
+		}
 
-		return result;
-	}
+		Matrix34 OpenVRUtils::CreateRotationMatrix(Quaternion* quaternion)
+		{
+			Matrix34 result;
+			OpenVRUtils::SetRotationMatrix(&result, quaternion);
+			return result;
+		}
 
-	Matrix34 OpenVRUtils::CreateRotationMatrix(Vector3* euler)
-	{
-		Matrix34 result;
+		Matrix34 OpenVRUtils::CreateRotationMatrix(Vector3* euler)
+		{
+			Matrix34 result;
+			OpenVRUtils::SetRotationMatrix(&result, euler);
+			return result;
+		}
 
-		return result;
-	}
+		// Thanks to https://www.flipcode.com/documents/matrfaq.html#Q54
+		// I really didn't want to write these :)
+		void OpenVRUtils::SetRotationMatrix(Matrix34* matrix, Vector3* euler)
+		{
+			float A = cos(euler->x);
+			float B = sin(euler->x);
+			float C = cos(euler->y);
+			float D = sin(euler->y);
+			float E = cos(euler->z);
+			float F = sin(euler->z);
+
+			float AD = A * D;
+			float BD = B * D;
+
+			matrix->m[0][0] = C * E;
+			matrix->m[0][1] = -C * F;
+			matrix->m[0][2] = -D;
+			matrix->m[1][0] = -BD * E + A * F;
+			matrix->m[1][1] = BD * F + A * E;
+			matrix->m[1][2] = -B * C;
+			matrix->m[2][0] = AD * E + B * F;
+			matrix->m[2][1] = -AD * F + B * E;
+			matrix->m[2][2] = A * C;
+		}
+
+		void OpenVRUtils::SetRotationMatrix(Matrix34* matrix, Quaternion* quaternion)
+		{
+			float xx = quaternion->x * quaternion->x;
+			float xy = quaternion->x * quaternion->y;
+			float xz = quaternion->x * quaternion->z;
+			float xw = quaternion->x * quaternion->w;
+
+			float yy = quaternion->y * quaternion->y;
+			float yz = quaternion->y * quaternion->z;
+			float yw = quaternion->y * quaternion->w;
+
+			float zz = quaternion->z * quaternion->z;
+			float zw = quaternion->z * quaternion->w;
+
+			matrix->m[0][0] = 1 - 2 * (yy + zz);
+			matrix->m[0][1] = 2 * (xy - zw);
+			matrix->m[0][2] = 2 * (xz + yw);
+
+			matrix->m[1][0] = 2 * (xy + zw);
+			matrix->m[1][1] = 1 - 2 * (xx + zz);
+			matrix->m[1][2] = 2 * (yz - xw);
+
+			matrix->m[2][0] = 2 * (xz - yw);
+			matrix->m[2][1] = 2 * (yz + xw);
+			matrix->m[2][2] = 1 - 2 * (xx + yy);
+		}
+
+		void OpenVRUtils::SetTranslationMatrix(Matrix34* matrix, Vector3* position)
+		{
+			matrix->m[0][3] = position->x;
+			matrix->m[1][3] = position->y;
+			matrix->m[2][3] = position->z;
+		}
+
+		void OpenVRUtils::SetScaleMatrix(Matrix34* matrix, Vector3* scale)
+		{
+			matrix->m[0][0] = scale->x;
+			matrix->m[1][1] = scale->y;
+			matrix->m[2][2] = scale->z;
+		}
+	#pragma endregion
 
 	//Conversions
 	void OpenVRUtils::CopyQuaternionToVMArray(Quaternion* quaternion, VMArray<float>* arr)
@@ -117,6 +201,37 @@ namespace PapyrusVR
 			arr->Set(&(vector->x), 0);
 			arr->Set(&(vector->y), 1);
 			arr->Set(&(vector->z), 2);
+		}
+	}
+
+	void OpenVRUtils::CopyVMArrayToQuaternion(VMArray<float>* arr, Quaternion* quaternion)
+	{
+		float value;
+		//Check Size
+		if (quaternion && arr && arr->arr && arr->Length() == 4)
+		{
+			arr->Get(&value, 0);
+			quaternion->x = value;
+
+			arr->Get(&value, 1);
+			quaternion->y = value;
+
+			arr->Get(&value, 2);
+			quaternion->z = value;
+
+			arr->Get(&value, 3);
+			quaternion->w = value;
+		}
+	}
+
+	void OpenVRUtils::CopyVMArrayToVector3(VMArray<float>* arr, Vector3* vector)
+	{
+		//Check Size
+		if (vector && arr && arr->arr && arr->Length() == 3)
+		{
+			arr->Get(&(vector->x), 0);
+			arr->Get(&(vector->y), 1);
+			arr->Get(&(vector->z), 2);
 		}
 	}
 }

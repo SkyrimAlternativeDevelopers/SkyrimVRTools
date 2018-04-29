@@ -15,6 +15,9 @@
     <Filter Include="API Headers\Utils">
       <UniqueIdentifier>{428590d3-a73a-46cf-8d54-640c84b3e1ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="API Headers\Collisions">
+      <UniqueIdentifier>{7a48af7f-cfd3-497b-a917-734ac55ff57a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -28,6 +31,12 @@
     </ClCompile>
     <ClCompile Include="api\utils\OpenVRUtils.cpp">
       <Filter>API Headers\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="api\collisions\Sphere.cpp">
+      <Filter>API Headers\Collisions</Filter>
+    </ClCompile>
+    <ClCompile Include="api\collisions\LocalOverlapObject.cpp">
+      <Filter>API Headers\Collisions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +65,15 @@
     </ClInclude>
     <ClInclude Include="api\utils\OpenVRUtils.h">
       <Filter>API Headers\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="api\collisions\IShape.h">
+      <Filter>API Headers\Collisions</Filter>
+    </ClInclude>
+    <ClInclude Include="api\collisions\Sphere.h">
+      <Filter>API Headers\Collisions</Filter>
+    </ClInclude>
+    <ClInclude Include="api\collisions\LocalOverlapObject.h">
+      <Filter>API Headers\Collisions</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
