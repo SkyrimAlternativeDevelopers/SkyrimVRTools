@@ -78,8 +78,10 @@ namespace PapyrusVR
 	public:
 		VRManager(VRManager const&) = delete;
 		void operator=(VRManager const&) = delete;
-		bool Init();
+		void Init();
 		void UpdatePoses();
+
+		bool IsInitialized();
 
 		//Events Register/Unregister
 		void RegisterVRButtonListener(OnVRButtonEvent listener) { GenericRegisterForEvent(listener, &_vrButtonEventsListeners, &_vrButtonEventsListenersMutex); }

@@ -10,6 +10,8 @@ namespace PapyrusVR
 	class VRManagerAPI
 	{
 	public:
+		virtual bool IsInitialized() = 0;
+
 		virtual void UpdatePoses() = 0;
 
 		virtual void RegisterVRButtonListener(OnVRButtonEvent listener) = 0;

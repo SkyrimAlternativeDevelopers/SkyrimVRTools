@@ -2,32 +2,27 @@
 
 namespace PapyrusVR
 {
-	bool VRManager::Init()
+	void VRManager::Init()
 	{
 		if ((_compositor = vr::VRCompositor()))
 			_MESSAGE("Compositor is reachable, proceding with setup...");
 		else
-		{
 			_MESSAGE("Failed to get compositor");
-			return false;
-		}
 
 		if ((_vr = vr::VRSystem()))
 			_MESSAGE("VR System is reachable, proceding with setup...");
 		else
-		{
 			_MESSAGE("Failed to get VR System");
-			return false;
-		}
-		
-		return true;
 	}
 
-	int _leftIndex;
-	int _rightIndex;
+	bool VRManager::IsInitialized()
+	{
+		return _compositor && _vr;
+	}
+
 	void VRManager::UpdatePoses()
 	{
-		if (_compositor)
+		if (IsInitialized())
 		{
 			vr::VRCompositorError error = _compositor->GetLastPoses((vr::TrackedDevicePose_t*)_renderPoses, vr::k_unMaxTrackedDeviceCount, (vr::TrackedDevicePose_t*)_gamePoses, vr::k_unMaxTrackedDeviceCount);
 			if (error && error != vr::EVRCompositorError::VRCompositorError_None)
@@ -61,8 +56,6 @@ namespace PapyrusVR
 			for (int i = 0; i < VRDevice::VRDevice_LeftController + 1; i++)
 				ProcessOverlapEvents((VRDevice)i);
 		}
-		else
-			Init();
 	}
 
 	void VRManager::UpdateTrackedDevicesMapEntry(VRDevice device, uint32_t newIndex)
@@ -104,7 +97,7 @@ namespace PapyrusVR
 
 	void VRManager::ProcessControllerEvents(VRDevice currentDevice)
 	{
-		if (_vr)
+		if (IsInitialized())
 		{
 			//If the device is mapped
 			if (_orderedTrackedDevicesMap[false][currentDevice])
@@ -210,7 +203,6 @@ namespace PapyrusVR
 		_MESSAGE("Radius %f", radius);
 		_MESSAGE("Transform size %d", sizeof(*transform));
 		_MESSAGE("Attached to deviceID %d", attachedDevice);
-		_MESSAGE("CreateLocalOverlapSphere");
 
 		TrackedDevicePose** attachedTo = NULL;
 		if (attachedDevice != VRDevice_Unknown)

@@ -283,6 +283,11 @@ namespace PapyrusVR
 						g_messagingInterface->Dispatch(*g_pluginHandle, kPapyrusVR_Message_Init, &apiMessage, sizeof(apiMessage), NULL);
 					}
 				}
+
+				//Ready to Initialize VRManager
+				if (message->type == SKSEMessagingInterface::kMessage_DataLoaded)
+					if(!VRManager::GetInstance().IsInitialized())
+						VRManager::GetInstance().Init();
 			}
 		}
 
