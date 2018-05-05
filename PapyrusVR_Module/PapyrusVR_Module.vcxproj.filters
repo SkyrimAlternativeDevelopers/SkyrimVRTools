@@ -38,6 +38,9 @@
     <ClCompile Include="api\collisions\LocalOverlapObject.cpp">
       <Filter>API Headers\Collisions</Filter>
     </ClCompile>
+    <ClCompile Include="api\PapyrusVRTypes.cpp">
+      <Filter>API Headers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def">

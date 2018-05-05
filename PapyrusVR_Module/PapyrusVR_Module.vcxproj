@@ -124,6 +124,7 @@
   <ItemGroup>
     <ClCompile Include="api\collisions\LocalOverlapObject.cpp" />
     <ClCompile Include="api\collisions\Sphere.cpp" />
+    <ClCompile Include="api\PapyrusVRTypes.cpp" />
     <ClCompile Include="api\utils\OpenVRUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PapyrusVR.cpp" />
