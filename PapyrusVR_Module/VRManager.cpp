@@ -156,7 +156,7 @@ namespace PapyrusVR
 		// Iterate through every object and calculate local overlap events
 		VROverlapEvent evt;
 		_vrLocalOverlapObjectMapMutex.lock();
-		for (UInt32 i = 1; i < _localOverlapObjectCount; i++)
+		for (UInt32 i = 1; i < _nextLocalOverlapObjectHandle; i++)
 		{
 			if (_localOverlapObjects[i])
 			{
@@ -212,7 +212,7 @@ namespace PapyrusVR
 		LocalOverlapObject* overlapObject = new LocalOverlapObject(overlapSphere, transform, attachedTo);
 
 		_vrLocalOverlapObjectMapMutex.lock();
-		UInt32 handle = _localOverlapObjectCount++;
+		UInt32 handle = _nextLocalOverlapObjectHandle++;
 		_localOverlapObjects[handle - 1] = overlapObject; //ID = handle - 1
 		_vrLocalOverlapObjectMapMutex.unlock();
 

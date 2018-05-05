@@ -22,7 +22,7 @@ namespace PapyrusVR
 			return instance;
 		}
 	private:
-		VRManager() : _localOverlapObjectCount(1) { }
+		VRManager() : _nextLocalOverlapObjectHandle(1) { }
 
 		vr::IVRCompositor* _compositor;
 		vr::IVRSystem* _vr;
@@ -38,7 +38,7 @@ namespace PapyrusVR
 		std::list<OnVRButtonEvent> _vrButtonEventsListeners;
 		std::list<OnVROverlapEvent> _vrOverlapEventsListeners;
 
-		UInt32 _localOverlapObjectCount;
+		UInt32 _nextLocalOverlapObjectHandle;
 		std::map<UInt32, LocalOverlapObject*> _localOverlapObjects;
 
 		TrackedDevicePose* _orderedTrackedDevicesMap[2][k_unMaxTrackedDeviceCount];
