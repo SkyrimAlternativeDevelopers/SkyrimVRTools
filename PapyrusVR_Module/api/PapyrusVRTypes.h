@@ -7,9 +7,11 @@ namespace PapyrusVR
 		float x;
 		float y;
 		float z;
+
+        static const Vector3 zero;
 	} Vector3;
 
-	const Vector3 Vector3_Zero = { 0,0,0 };
+    const Vector3 Vector3::zero = { 0,0,0 };
 
 	typedef struct Quaternion
 	{
