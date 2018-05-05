@@ -14,7 +14,7 @@ namespace PapyrusVR
 		else
 			_MESSAGE("Failed to get VR System");
 	}
-
+          
 	bool VRManager::IsInitialized()
 	{
 		return _compositor && _vr;
@@ -198,7 +198,8 @@ namespace PapyrusVR
 		_MESSAGE("CreateLocalOverlapSphere");
 
 		if (!transform)
-			return 0;
+			return 0; //handle = 0, ERROR
+
 		Sphere* overlapSphere = new Sphere(radius);
 		_MESSAGE("Radius %f", radius);
 		_MESSAGE("Transform size %d", sizeof(*transform));
@@ -210,21 +211,23 @@ namespace PapyrusVR
 
 		LocalOverlapObject* overlapObject = new LocalOverlapObject(overlapSphere, transform, attachedTo);
 
-		//Finds unique handle (0,UINT32_MAX]
-
 		_vrLocalOverlapObjectMapMutex.lock();
 		UInt32 handle = _localOverlapObjectCount++;
-		_localOverlapObjects[handle] = overlapObject; 
+		_localOverlapObjects[handle - 1] = overlapObject; //ID = handle - 1
 		_vrLocalOverlapObjectMapMutex.unlock();
 
-		return 0;
+		return handle;
 	}
 
 	void VRManager::DestroyLocalOverlapObject(UInt32 overlapObjectHandle)
 	{
+		UInt32 overlapObjectID = overlapObjectHandle - 1;
 		_vrLocalOverlapObjectMapMutex.lock();
-		if(_localOverlapObjects[overlapObjectHandle])
-			_localOverlapObjects.erase(overlapObjectHandle);
+		if (_localOverlapObjects.count(overlapObjectID))
+		{
+			delete _localOverlapObjects[overlapObjectID];
+			_localOverlapObjects.erase(overlapObjectID);
+		}
 		_vrLocalOverlapObjectMapMutex.unlock();
 	}
 
