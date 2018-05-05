@@ -156,16 +156,14 @@ namespace PapyrusVR
 		// Iterate through every object and calculate local overlap events
 		VROverlapEvent evt;
 		_vrLocalOverlapObjectMapMutex.lock();
-		for (UInt32 i = 1; i < _nextLocalOverlapObjectHandle; i++)
+		for (auto const& element : _localOverlapObjects)
 		{
-			if (_localOverlapObjects[i])
-			{
-				evt = _localOverlapObjects[i]->CheckOverlapWithPose(currentDevice, GetPoseByDeviceEnum(currentDevice));
+			
+			evt = element.second->CheckOverlapWithPose(currentDevice, GetPoseByDeviceEnum(currentDevice));
 
-				//Notify listeners of event
-				if (evt != VROverlapEvent::VROverlapEvent_None)
-					DispatchVROverlapEvent(evt, i, currentDevice);
-			}
+			//Notify listeners of event
+			if (evt != VROverlapEvent::VROverlapEvent_None)
+				DispatchVROverlapEvent(evt, element.first, currentDevice);
 		}
 		_vrLocalOverlapObjectMapMutex.unlock();
 	}
@@ -183,9 +181,10 @@ namespace PapyrusVR
 	}
 
 	//Notifies all listeners that an overlap has occured
-	void VRManager::DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectHandle, VRDevice device)
+	void VRManager::DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectID, VRDevice device)
 	{
 		//TODO: Filter events?
+		UInt32 objectHandle = objectID + 1;
 		_MESSAGE("Dispatching overlap event %d from device %d in handle %d", eventType, device, objectHandle);
 		_vrOverlapEventsListenersMutex.lock();
 		for (OnVROverlapEvent& listener : _vrOverlapEventsListeners)

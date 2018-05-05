@@ -47,7 +47,7 @@ namespace PapyrusVR
 		VREvent CheckStatesForMask(UInt64 previousEvt, UInt64 newEvt, UInt64 mask);
 
 		void DispatchVRButtonEvent(VREventType eventType, EVRButtonId button, VRDevice device);
-		void DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectHandle, VRDevice device);
+		void DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectID, VRDevice device);
 
 		void ProcessControllerEvents(VRDevice currentDevice);
 		void ProcessOverlapEvents(VRDevice currentDevice);
