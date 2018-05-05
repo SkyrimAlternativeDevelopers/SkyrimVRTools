@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "IShape.h"
 #include "../OpenVRTypes.h"
 #include "../PapyrusVRTypes.h"
@@ -10,17 +11,17 @@ namespace PapyrusVR
 	{
 	public:
 		LocalOverlapObject(IShape* aShape, Matrix34* aTransform, TrackedDevicePose** aAttachedDevicePose = NULL) :
-			shape(aShape), 
-			transform(aTransform), 
+			shape(aShape),
+			transform(aTransform),
 			attachedDevicePose(aAttachedDevicePose) { };
 	private:
-		IShape* shape;
+		std::unique_ptr<IShape> shape;
+		std::unique_ptr<Matrix34> transform;
+
 		TrackedDevicePose** attachedDevicePose;
 		bool _prevStates[k_unMaxTrackedDeviceCount];
 		VROverlapEvent ComputeOverlapEvent(bool previousState, bool currentState);
 	public:
-		Matrix34* transform;
-
 		//Checks if an overlap occured with the given pose, selfCollisions enables checks on the attached pose as well 
 		VROverlapEvent CheckOverlapWithPose(VRDevice device, TrackedDevicePose* otherPose, bool selfCollisions = false);
 
