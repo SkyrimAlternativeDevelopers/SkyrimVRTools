@@ -9,15 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="API Headers">
-      <UniqueIdentifier>{56fd84e4-3739-4b84-8f27-2c98af3f1cb9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="API Headers\Utils">
-      <UniqueIdentifier>{428590d3-a73a-46cf-8d54-640c84b3e1ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="API Headers\Collisions">
-      <UniqueIdentifier>{7a48af7f-cfd3-497b-a917-734ac55ff57a}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -28,18 +19,6 @@
     </ClCompile>
     <ClCompile Include="VRManager.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="api\utils\OpenVRUtils.cpp">
-      <Filter>API Headers\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="api\collisions\Sphere.cpp">
-      <Filter>API Headers\Collisions</Filter>
-    </ClCompile>
-    <ClCompile Include="api\collisions\LocalOverlapObject.cpp">
-      <Filter>API Headers\Collisions</Filter>
-    </ClCompile>
-    <ClCompile Include="api\PapyrusVRTypes.cpp">
-      <Filter>API Headers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,30 +32,6 @@
     </ClInclude>
     <ClInclude Include="VRManager.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="api\PapyrusVRAPI.h">
-      <Filter>API Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="api\VRManagerAPI.h">
-      <Filter>API Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="api\PapyrusVRTypes.h">
-      <Filter>API Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="api\OpenVRTypes.h">
-      <Filter>API Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="api\utils\OpenVRUtils.h">
-      <Filter>API Headers\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="api\collisions\IShape.h">
-      <Filter>API Headers\Collisions</Filter>
-    </ClInclude>
-    <ClInclude Include="api\collisions\Sphere.h">
-      <Filter>API Headers\Collisions</Filter>
-    </ClInclude>
-    <ClInclude Include="api\collisions\LocalOverlapObject.h">
-      <Filter>API Headers\Collisions</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

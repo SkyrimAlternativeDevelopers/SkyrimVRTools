@@ -11,21 +11,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>papyrusvr</ProjectName>
+    <ProjectName>papyrusvr_api</ProjectName>
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{9D903497-BB27-4C98-801C-E70FDF7E41FA}</ProjectGuid>
-    <RootNamespace>PapyrusVRModule</RootNamespace>
+    <ProjectGuid>{9D903497-BB27-4C98-801C-E70FDF7E41FB}</ProjectGuid>
+    <RootNamespace>PapyrusVR_API</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -35,11 +35,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="User.props" />
+    <Import Project="../User.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="User.props" />
+    <Import Project="../User.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -69,7 +69,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>shlwapi.lib;libs/*.lib;libs/Debug/*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;../libs/*.lib;../libs/Debug/*.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -90,7 +90,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\..;$(SolutionDir)\..\..;$(SolutionDir)\..\openvr;$(SolutionDir)\..\skse;$(SolutionDir)\..\skse\sksevr;$(SolutionDir)\..\skse\sksevr\skse64;$(SolutionDir)\..\..\openvr;$(SolutionDir)\..\..\skse;$(SolutionDir)\..\..\skse\sksevr;$(SolutionDir)\..\..\skse\sksevr\skse64;$(SolutionDir)\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\..;$(SolutionDir)\..\..;$(SolutionDir)\..\openvr;$(SolutionDir)\..\skse;;$(SolutionDir)\..\skse\sksevr;$(SolutionDir)\..\skse\sksevr\skse64;$(SolutionDir)\..\..\openvr;$(SolutionDir)\..\..\skse;$(SolutionDir)\..\..\skse\sksevr;$(SolutionDir)\..\..\skse\sksevr\skse64;$(SolutionDir)\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGIN_EXAMPLE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -106,7 +106,7 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>shlwapi.lib;libs/*.lib;libs/Release/*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;../libs/*.lib;../libs/Release/*.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -115,28 +115,31 @@
       </Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "$(Skyrim64Path)\Data\SKSE\Plugins\$(TargetFileName)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Installing DLL...</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="PapyrusVR.cpp" />
-    <ClCompile Include="VRManager.cpp" />
+    <ClInclude Include="collisions\IShape.h" />
+    <ClInclude Include="collisions\LocalOverlapObject.h" />
+    <ClInclude Include="collisions\Sphere.h" />
+    <ClInclude Include="OpenVRTypes.h" />
+    <ClInclude Include="PapyrusVRAPI.h" />
+    <ClInclude Include="PapyrusVRTypes.h" />
+    <ClInclude Include="utils\OpenVRUtils.h" />
+    <ClInclude Include="VRManagerAPI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PapyrusVR.h" />
-    <ClInclude Include="VRManager.h" />
+    <ClCompile Include="collisions\LocalOverlapObject.cpp" />
+    <ClCompile Include="collisions\Sphere.cpp" />
+    <ClCompile Include="PapyrusVRTypes.cpp" />
+    <ClCompile Include="utils\OpenVRUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="exports.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="api\papyrus_api.vcxproj">
-      <Project>{9d903497-bb27-4c98-801c-e70fdf7e41fb}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
