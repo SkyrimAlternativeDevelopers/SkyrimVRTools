@@ -11,3 +11,5 @@
 /x64/Release
 /.vs
 /PapyrusVR_Module/api/x64/Release
+*.db
+*.opendb
