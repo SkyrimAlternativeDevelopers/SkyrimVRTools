@@ -9,6 +9,11 @@ namespace PapyrusVR
 		float z;
 
         static const Vector3 zero;
+
+        inline float lengthSquared(  )
+        {
+            return x * x + y * y + z * z;
+        };
 	} Vector3;
 
 	Vector3& operator-(Vector3 const& lhs, Vector3 const& rhs);
