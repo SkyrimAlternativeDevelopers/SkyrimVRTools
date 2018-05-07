@@ -233,10 +233,11 @@ namespace PapyrusVR
 			VRManager::GetInstance().UpdatePoses();
 
 			//Notify Listeners
-			listenersMutex.lock();
+            std::lock_guard<std::mutex> lock( listenersMutex );
+
 			for (OnPoseUpdateCallback& callback : g_poseUpdateListeners)
 				callback(deltaTime);
-			listenersMutex.unlock();
+
 
 			//Notify Papyrus scripts
 			//WARNING: Disabled cause this will currently freeze the game every 90 seconds
@@ -251,9 +252,9 @@ namespace PapyrusVR
 	#pragma region API
 		void RegisterPoseUpdateListener(OnPoseUpdateCallback callback)
 		{
-			listenersMutex.lock();
+            std::lock_guard<std::mutex> lock( listenersMutex );
+
 			g_poseUpdateListeners.push_back(callback);
-			listenersMutex.unlock();
 		}
 
 		//Returns the VRManager singleton instance

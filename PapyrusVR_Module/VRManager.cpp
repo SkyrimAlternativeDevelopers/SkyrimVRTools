@@ -155,7 +155,9 @@ namespace PapyrusVR
 		// O(_localOverlapObjects.len)
 		// Iterate through every object and calculate local overlap events
 		VROverlapEvent evt;
-		_vrLocalOverlapObjectMapMutex.lock();
+
+        std::lock_guard<std::mutex> lock( _vrLocalOverlapObjectMapMutex );
+
 		for (auto const& element : _localOverlapObjects)
 		{
 			
@@ -165,19 +167,18 @@ namespace PapyrusVR
 			if (evt != VROverlapEvent::VROverlapEvent_None)
 				DispatchVROverlapEvent(evt, element.first, currentDevice);
 		}
-		_vrLocalOverlapObjectMapMutex.unlock();
 	}
 
 	//Notifies all listeners that an event has occured
 	void VRManager::DispatchVRButtonEvent(VREventType eventType, EVRButtonId button, VRDevice device)
 	{
-		_vrButtonEventsListenersMutex.lock();
+        std::lock_guard<std::mutex> lock( _vrButtonEventsListenersMutex );
+
 		for (OnVRButtonEvent& listener : _vrButtonEventsListeners)
 		{
 			if (listener)
 				(*listener)(eventType, button, device);
 		}
-		_vrButtonEventsListenersMutex.unlock();
 	}
 
 	//Notifies all listeners that an overlap has occured
@@ -186,10 +187,11 @@ namespace PapyrusVR
 		//TODO: Filter events?
 		UInt32 objectHandle = objectID + 1;
 		_MESSAGE("Dispatching overlap event %d from device %d in handle %d", eventType, device, objectHandle);
-		_vrOverlapEventsListenersMutex.lock();
+
+        std::lock_guard<std::mutex> lock( _vrOverlapEventsListenersMutex );
+
 		for (OnVROverlapEvent& listener : _vrOverlapEventsListeners)
 			(*listener)(eventType, objectHandle, device);
-		_vrOverlapEventsListenersMutex.unlock();
 	}
 
 	UInt32 VRManager::CreateLocalOverlapSphere(float radius, Matrix34* transform, VRDevice attachedDevice)
@@ -210,10 +212,10 @@ namespace PapyrusVR
 
 		LocalOverlapObject* overlapObject = new LocalOverlapObject(overlapSphere, transform, attachedTo);
 
-		_vrLocalOverlapObjectMapMutex.lock();
+        std::lock_guard<std::mutex> lock( _vrLocalOverlapObjectMapMutex );
+
 		UInt32 handle = _nextLocalOverlapObjectHandle++;
 		_localOverlapObjects[handle - 1] = overlapObject; //ID = handle - 1
-		_vrLocalOverlapObjectMapMutex.unlock();
 
 		return handle;
 	}
@@ -221,13 +223,14 @@ namespace PapyrusVR
 	void VRManager::DestroyLocalOverlapObject(UInt32 overlapObjectHandle)
 	{
 		UInt32 overlapObjectID = overlapObjectHandle - 1;
-		_vrLocalOverlapObjectMapMutex.lock();
+
+        std::lock_guard<std::mutex> lock( _vrLocalOverlapObjectMapMutex );
+
 		if (_localOverlapObjects.count(overlapObjectID))
 		{
 			delete _localOverlapObjects[overlapObjectID];
 			_localOverlapObjects.erase(overlapObjectID);
 		}
-		_vrLocalOverlapObjectMapMutex.unlock();
 	}
 
 	TrackedDevicePose* VRManager::GetHMDPose(bool renderPose)
