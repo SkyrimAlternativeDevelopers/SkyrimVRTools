@@ -13,3 +13,5 @@
 /PapyrusVR_Module/api/x64/Release
 *.db
 *.opendb
+/PapyrusVR_Module/api/x64/Debug
+/papyrusvr_test/x64

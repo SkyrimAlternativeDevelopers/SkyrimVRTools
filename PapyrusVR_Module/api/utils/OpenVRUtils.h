@@ -6,6 +6,11 @@ namespace PapyrusVR
 {
 	class OpenVRUtils
 	{
+	private:
+		static float MetersToSkyrimUnitsFactor; // 10000/VRWorldScale
+		static float SkyrimUnitsToMetersFactor; // VRWorldScale/10000 (stored for Performance Reasons)
+		static Matrix33 ConversionMatrix;
+		static Matrix33 TConversionMatrix;
 	public:
 		static Quaternion GetRotation(Matrix34* steam_vr_matrix);
 		static Vector3 GetPosition(Matrix34* steam_vr_matrix);
@@ -28,9 +33,14 @@ namespace PapyrusVR
 		static void CopyVector3ToVMArray(Vector3* vector, VMArray<float>* arr);
 		static void CopyVMArrayToQuaternion(VMArray<float>* arr, Quaternion* quaternion);
 		static void CopyVMArrayToVector3(VMArray<float>* arr, Vector3* vector);
+		static void SkyrimTransformToSteamVRTransform(Matrix34* matrix);
+		static void SteamVRTransformToSkyrimTransform(Matrix34* matrix);
 
 		//In-Line Constants
 		static double Rad2Deg(double radiants) { return radiants * 57.2957795131; }
 		static double Deg2Rad(double degrees) { return degrees / 57.2957795131; }
+
+		//Game Variables
+		static void SetVRGameScale(float VRWorldScale);
 	};
 }

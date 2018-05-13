@@ -2,6 +2,16 @@
 
 namespace PapyrusVR
 {
+	float OpenVRUtils::MetersToSkyrimUnitsFactor = 0.0f;
+	float OpenVRUtils::SkyrimUnitsToMetersFactor = 0.0f;
+
+	Matrix33 OpenVRUtils::ConversionMatrix = Matrix33(1, 0, 0,
+													  0, 0, -1,
+													  0, 1, 0);
+	Matrix33 OpenVRUtils::TConversionMatrix = Matrix33(1, 0, 0,
+														0, 0, 1,
+														0, -1, 0);
+
 	/*
 	Thanks to Omnifinity for this conversion
 	https://github.com/Omnifinity/OpenVR-Tracking-Example/blob/master/HTC%20Lighthouse%20Tracking%20Example/LighthouseTracking.cpp
@@ -60,7 +70,6 @@ namespace PapyrusVR
 	}
 
 	#pragma region Matrix Operations
-
 		Matrix34 OpenVRUtils::CreateTransformMatrix(Vector3* translation, Vector3* euler)
 		{
 			Matrix34 result;
@@ -233,5 +242,75 @@ namespace PapyrusVR
 			arr->Get(&(vector->y), 1);
 			arr->Get(&(vector->z), 2);
 		}
+	}
+
+	void OpenVRUtils::SkyrimTransformToSteamVRTransform(Matrix34* matrix)
+	{
+		Vector3 position = OpenVRUtils::GetPosition(matrix);
+		Matrix33 rotation = Matrix33FromTransform(matrix);
+
+		Matrix33 SkyrimRotation = TConversionMatrix * rotation * ConversionMatrix;
+		*matrix = Matrix34FromRotation(&SkyrimRotation);
+
+		float temp = position.y;
+		matrix->m[0][3] = position.x * OpenVRUtils::SkyrimUnitsToMetersFactor;
+		matrix->m[1][3] = position.z * OpenVRUtils::SkyrimUnitsToMetersFactor;
+		matrix->m[2][3] = -temp * OpenVRUtils::SkyrimUnitsToMetersFactor;
+		/*Vector3 temp;
+
+		//Swaps collumns
+		temp.x = matrix->m[0][1];
+		temp.y = -matrix->m[1][1];
+		temp.z = -matrix->m[2][1];
+
+		matrix->m[0][1] = matrix->m[0][2];
+		matrix->m[1][1] = -matrix->m[1][2];
+		matrix->m[2][1] = matrix->m[2][2];
+
+		matrix->m[0][2] = temp.x;
+		matrix->m[1][2] = temp.y;
+		matrix->m[2][2] = temp.z;
+
+		//Spaws rows
+		temp.x = matrix->m[1][0];
+		temp.y = matrix->m[1][1];
+		temp.z = -matrix->m[1][2];
+
+		matrix->m[1][0] = matrix->m[2][0];
+		matrix->m[1][1] = -matrix->m[2][1];
+		matrix->m[1][2] = matrix->m[2][2];
+
+		matrix->m[2][0] = temp.x;
+		matrix->m[2][1] = temp.y;
+		matrix->m[2][2] = temp.z;
+
+		//Swaps YZ in Traslation Vector (and adjusts Z sign)
+		temp.y = matrix->m[1][3] * OpenVRUtils::SkyrimUnitsToMetersFactor;
+		matrix->m[1][3] = matrix->m[2][3] * OpenVRUtils::SkyrimUnitsToMetersFactor;
+		matrix->m[2][3] = -temp.y; //Invert sign
+
+		//Converts remaining parameters
+		matrix->m[0][3] *= OpenVRUtils::SkyrimUnitsToMetersFactor;*/
+	}
+
+	void OpenVRUtils::SteamVRTransformToSkyrimTransform(Matrix34* matrix)
+	{
+		Vector3 position = OpenVRUtils::GetPosition(matrix);
+		Matrix33 rotation = Matrix33FromTransform(matrix);
+		
+		Matrix33 SkyrimRotation = ConversionMatrix * rotation * TConversionMatrix;
+		*matrix = Matrix34FromRotation(&SkyrimRotation);
+
+		float temp = position.y;
+		matrix->m[0][3] = position.x * OpenVRUtils::MetersToSkyrimUnitsFactor;
+		matrix->m[1][3] = -position.z * OpenVRUtils::MetersToSkyrimUnitsFactor;
+		matrix->m[2][3] = temp * OpenVRUtils::MetersToSkyrimUnitsFactor;
+	}
+
+
+	void OpenVRUtils::SetVRGameScale(float VRWorldScale)
+	{
+		OpenVRUtils::MetersToSkyrimUnitsFactor = VRWorldScale;
+		OpenVRUtils::SkyrimUnitsToMetersFactor = 1 / VRWorldScale;
 	}
 }

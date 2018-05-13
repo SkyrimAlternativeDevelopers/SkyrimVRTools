@@ -47,6 +47,20 @@ namespace PapyrusVR
 		return transformedVector;
 	}
 
+	Matrix33& operator*(Matrix33 const& lhs, Matrix33 const& rhs)
+	{
+		//O(n^3) :(
+		Matrix33 result;
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+			{
+				result.m[i][j] = 0;
+				for (int k = 0; k < 3; k++)
+					result.m[i][j] += lhs.m[i][k] * rhs.m[k][j];
+			}
+		return result;
+	}
+
 	Matrix34& Matrix34::operator+(Matrix34 const& rhs)
 	{
 		for (int i = 0; i < 3; i++)
@@ -78,5 +92,19 @@ namespace PapyrusVR
 			for (int j = 0; j < 4; j++)
 				result.m[i][j] = lhs.m[i][j] - rhs.m[i][j];
 		return result;
+	}
+
+	Matrix33& Matrix33FromTransform(Matrix34 const* matrix)
+	{
+		return Matrix33(matrix->m[0][0], matrix->m[0][1], matrix->m[0][2],
+						matrix->m[1][0], matrix->m[1][1], matrix->m[1][2],
+						matrix->m[2][0], matrix->m[2][1], matrix->m[2][2]);
+	}
+
+	Matrix34& Matrix34FromRotation(Matrix33 const* matrix)
+	{
+		return Matrix34(matrix->m[0][0], matrix->m[0][1], matrix->m[0][2], 0,
+						matrix->m[1][0], matrix->m[1][1], matrix->m[1][2], 0,
+						matrix->m[2][0], matrix->m[2][1], matrix->m[2][2], 0);
 	}
 }
