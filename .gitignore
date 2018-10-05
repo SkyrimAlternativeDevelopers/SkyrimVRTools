@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+#visual studio garbage
+*.tlog
+*.lastbuildstate
+*.ipch
+*.iobj
+*.ipdb
+*.idb
+*.filters
+*.vssscc
+*.db
+*.opendb
+*.exp

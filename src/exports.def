@@ -1,0 +1,4 @@
+LIBRARY	"SKSE-VRInputPlugin"
+EXPORTS
+SKSEPlugin_Query
+SKSEPlugin_Load
