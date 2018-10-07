@@ -81,6 +81,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\..;$(SolutionDir)\..\..;$(SolutionDir)\..\openvr;$(SolutionDir)\..\skse;;$(SolutionDir)\..\skse\sksevr;$(SolutionDir)\..\skse\sksevr\skse64;$(SolutionDir)\..\..\openvr;$(SolutionDir)\..\..\skse;$(SolutionDir)\..\..\skse\sksevr;$(SolutionDir)\..\..\skse\sksevr\skse64;$(SolutionDir)\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
@@ -90,9 +91,10 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\..;$(SolutionDir)\..\..;$(SolutionDir)\..\openvr;$(SolutionDir)\..\skse;;$(SolutionDir)\..\skse\sksevr;$(SolutionDir)\..\skse\sksevr\skse64;$(SolutionDir)\..\..\openvr;$(SolutionDir)\..\..\skse;$(SolutionDir)\..\..\skse\sksevr;$(SolutionDir)\..\..\skse\sksevr\skse64;$(SolutionDir)\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>shlwapi.lib;../PapyrusVR_Module/libs/*.lib;../PapyrusVR_Module/libs/Release/*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -7,7 +7,7 @@ namespace PapyrusVR
 
 	Vector3& operator-(Vector3 const& lhs, Vector3 const& rhs)
 	{
-		Vector3 result;
+		static Vector3 result;
 		result.x = lhs.x - rhs.x;
 		result.y = lhs.y - rhs.y;
 		result.z = lhs.z - rhs.z;
@@ -16,7 +16,7 @@ namespace PapyrusVR
 
 	Vector3& operator+(Vector3 const& lhs, Vector3 const& rhs)
 	{
-		Vector3 result;
+		static Vector3 result;
 		result.x = lhs.x + rhs.x;
 		result.y = lhs.y + rhs.y;
 		result.z = lhs.z + rhs.z;
@@ -25,7 +25,7 @@ namespace PapyrusVR
 
 	Vector3& operator*(Matrix34 const& lhs, Vector3 const& rhs)
 	{
-		Vector3 transformedVector;
+		static Vector3 transformedVector;
 
 		float ax = lhs.m[0][0] * rhs.x;
 		float by = lhs.m[0][1] * rhs.y;
@@ -50,7 +50,7 @@ namespace PapyrusVR
 	Matrix33& operator*(Matrix33 const& lhs, Matrix33 const& rhs)
 	{
 		//O(n^3) :(
-		Matrix33 result;
+		static Matrix33 result;
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++)
 			{
@@ -66,6 +66,7 @@ namespace PapyrusVR
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 4; j++)
 				m[i][j] += rhs.m[i][j];
+		return *this;
 	}
 
 	Matrix34& Matrix34::operator-(Matrix34 const& rhs)
@@ -73,12 +74,13 @@ namespace PapyrusVR
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 4; j++)
 				m[i][j] -= rhs.m[i][j];
+		return *this;
 	}
 
 
 	Matrix34& operator+(Matrix34 const& lhs, Matrix34 const& rhs)
 	{
-		Matrix34 result;
+		static Matrix34 result;
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 4; j++)
 				result.m[i][j] = lhs.m[i][j] + rhs.m[i][j];
@@ -87,7 +89,7 @@ namespace PapyrusVR
 
 	Matrix34& operator-(Matrix34 const& lhs, Matrix34 const& rhs)
 	{
-		Matrix34 result;
+		static Matrix34 result;
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 4; j++)
 				result.m[i][j] = lhs.m[i][j] - rhs.m[i][j];
@@ -96,15 +98,17 @@ namespace PapyrusVR
 
 	Matrix33& Matrix33FromTransform(Matrix34 const* matrix)
 	{
-		return Matrix33(matrix->m[0][0], matrix->m[0][1], matrix->m[0][2],
-						matrix->m[1][0], matrix->m[1][1], matrix->m[1][2],
-						matrix->m[2][0], matrix->m[2][1], matrix->m[2][2]);
+		static Matrix33 result = Matrix33(matrix->m[0][0], matrix->m[0][1], matrix->m[0][2],
+			matrix->m[1][0], matrix->m[1][1], matrix->m[1][2],
+			matrix->m[2][0], matrix->m[2][1], matrix->m[2][2]);
+		return result;
 	}
 
 	Matrix34& Matrix34FromRotation(Matrix33 const* matrix)
 	{
-		return Matrix34(matrix->m[0][0], matrix->m[0][1], matrix->m[0][2], 0,
-						matrix->m[1][0], matrix->m[1][1], matrix->m[1][2], 0,
-						matrix->m[2][0], matrix->m[2][1], matrix->m[2][2], 0);
+		static Matrix34 result = Matrix34(matrix->m[0][0], matrix->m[0][1], matrix->m[0][2], 0,
+			matrix->m[1][0], matrix->m[1][1], matrix->m[1][2], 0,
+			matrix->m[2][0], matrix->m[2][1], matrix->m[2][2], 0);
+		return result; 
 	}
 }

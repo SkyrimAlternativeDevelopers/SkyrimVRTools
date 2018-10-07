@@ -16,6 +16,9 @@ extern "C" {
 		gLog.SetPrintLevel(IDebugLog::kLevel_Error);
 		gLog.SetLogLevel(IDebugLog::kLevel_DebugMessage);
 
+		//Test for enabling /GS security checks
+		__security_init_cookie();
+
 		_MESSAGE("PapyrusVR");
 
 		// populate info structure
@@ -36,7 +39,7 @@ extern "C" {
 
 			return false;
 		}
-		else if (skse->runtimeVersion != RUNTIME_VR_VERSION_1_3_64)
+		else if (skse->runtimeVersion != RUNTIME_VR_VERSION_1_4_15)
 		{
 			_MESSAGE("unsupported runtime version %08X", skse->runtimeVersion);
 
@@ -57,6 +60,9 @@ extern "C" {
 
 		//Updates pointer
 		_MESSAGE("Current register plugin function at memory address: %p", PapyrusVR::RegisterForPoseUpdates);
+
+		//Debug
+		//__debugbreak();
 
 		//Check if the function registration was a success...
 		bool btest = g_papyrus->Register(PapyrusVR::RegisterFuncs);

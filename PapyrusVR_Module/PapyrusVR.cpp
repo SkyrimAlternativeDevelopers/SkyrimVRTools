@@ -2,8 +2,28 @@
 
 namespace PapyrusVR 
 {
+	/*
+	skyrimvr.dll+(offset)
+	|	Offset	|	Assembly
+		...
+		C50C50		push rdi
+		C50C52		sub rsp,30
+		C50C56		mov qword ptr ss:[rsp+20],FFFFFFFFFFFFFFFE
+		C50C5F		mov qword ptr ss:[rsp+40],rbx
+		C50C64		mov rbx,rcx
+		C50C67		cmp qword ptr ds:[rcx+30],0
+	|---C50C6C		je skyrimvr.7FF7B68F0C7F
+	|	C50C6E		add rcx,30
+	|	C50C72		call skyrimvr.7FF7B68DFD40			
+	|	C50C77		nop
+	|	C50C78		mov dword ptr ds:[rbx+40],0
+	|-->C50C7F		lea rcx,qword ptr ds:[rbx+40]
+		C50C83		call skyrimvr.7FF7B68DFB10			-> call <JMP.&PapyrusVR::OnVRUpdate>
+		C50C88		nop
+		....
+	*/
 	//OpenVR Hook
-	RelocAddr <uintptr_t>	OpenVR_Call(0xC50C69);
+	RelocAddr <uintptr_t>	OpenVR_Call(0xC50C83);
 	BranchTrampoline		l_LocalBranchTrampoline;
 
 	//Custom Pose Event
