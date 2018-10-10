@@ -5,6 +5,12 @@ VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SKSE-VRInputPlugin", "src\SKSE-VRInputPlugin.vcxproj", "{E57390F7-A15D-4971-89E6-9785011A51B9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common_vc14", "src\common\common_vc14.vcxproj", "{472E19AB-DEF0-42DF-819B-18722E8DC822}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skse64", "src\skse64\skse64.vcxproj", "{639411C0-FC23-4819-A0C5-429A4E5D8A51}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skse64_common", "src\skse64_common\skse64_common.vcxproj", "{5FD1C08D-DB80-480C-A1C6-F0920005CD13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -19,6 +25,24 @@ Global
 		{E57390F7-A15D-4971-89E6-9785011A51B9}.Release|x64.ActiveCfg = Release|x64
 		{E57390F7-A15D-4971-89E6-9785011A51B9}.Release|x64.Build.0 = Release|x64
 		{E57390F7-A15D-4971-89E6-9785011A51B9}.Release|x86.ActiveCfg = Release|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug|x64.ActiveCfg = Debug|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug|x64.Build.0 = Debug|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug|x86.ActiveCfg = Debug|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Release|x64.ActiveCfg = Release|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Release|x64.Build.0 = Release|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Release|x86.ActiveCfg = Release|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Debug|x64.ActiveCfg = Debug|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Debug|x64.Build.0 = Debug|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Debug|x86.ActiveCfg = Debug|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Release|x64.ActiveCfg = Release|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Release|x64.Build.0 = Release|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Release|x86.ActiveCfg = Release|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Debug|x64.ActiveCfg = Debug|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Debug|x64.Build.0 = Debug|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Debug|x86.ActiveCfg = Debug|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Release|x64.ActiveCfg = Release|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Release|x64.Build.0 = Release|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

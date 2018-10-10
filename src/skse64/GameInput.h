@@ -4,8 +4,6 @@
 #include "GameEvents.h"
 #include "InputMap.h"
 
-#include "common/IErrors.h"
-
 class PlayerControls;
 class BGSEncounterZone;
 class MenuEventHandler;

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <inttypes.h>
-#include <ITypes.h>
-
 void SafeWriteBuf(uintptr_t addr, void * data, size_t len);
 void SafeWrite8(uintptr_t addr, UInt8 data);
 void SafeWrite16(uintptr_t addr, UInt16 data);

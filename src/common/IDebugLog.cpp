@@ -3,7 +3,7 @@
 #include "common/IFileStream.h"
 #include <shlobj.h>
 
-FILE			* IDebugLog::logFile = NULL;
+std::FILE			* IDebugLog::logFile = NULL;
 char				IDebugLog::sourceBuf[16] = { 0 };
 char				IDebugLog::headerText[16] = { 0 };
 char				IDebugLog::formatBuf[8192] = { 0 };
@@ -65,7 +65,7 @@ void IDebugLog::OpenRelative(int folderID, const char * relPath)
 
 	strcat_s(path, sizeof(path), relPath);
 
-//	IFileStream::MakeAllDirs(path);
+	IFileStream::MakeAllDirs(path);
 
 	Open(path);
 }

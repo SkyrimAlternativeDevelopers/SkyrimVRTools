@@ -7,8 +7,6 @@
 #include "skse64/PapyrusValue.h"
 #include "skse64/PapyrusInterfaces.h"
 
-#include "IErrors.h"
-
 class IFunction;
 class VMIdentifier;
 class VMValue;
@@ -419,13 +417,10 @@ public:
 	bool SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper);
 	bool LoadGlobalData_Hook(void * handleReaderWriter, void * loadStorageWrapper);
 };
-
-/*
 STATIC_ASSERT(offsetof(SkyrimVM, m_classRegistry) == 0x200);
 STATIC_ASSERT(offsetof(SkyrimVM, m_updateLock) == 0x714);
 STATIC_ASSERT(offsetof(SkyrimVM, m_updateRegHolder) == 0x720);
 STATIC_ASSERT(offsetof(SkyrimVM, m_updateGameTimeRegHolder) == 0x738);
-*/
 
 extern RelocPtr<SkyrimVM*> g_skyrimVM;
 

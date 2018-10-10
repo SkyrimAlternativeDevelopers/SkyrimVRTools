@@ -1,5 +1,4 @@
 #include "Relocation.h"
-#include <windows.h>
 
 // the goal of this file is to support pointers in to a relocated binary with as little runtime overhead, code bloat, and hassle as possible
 // 

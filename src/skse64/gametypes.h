@@ -3,28 +3,7 @@
 #include "skse64_common/Utilities.h"
 #include "skse64/GameAPI.h"
 
-
-
 class TESForm;
-
-// lfrazer: Not sure how this builds without StringFinder_CI definition, but I found it in some old OBSE code
-
-class StringFinder_CI
-{
-	char* m_stringToFind;
-public:
-	StringFinder_CI(char* str) : m_stringToFind(str)
-	{	}
-
-	bool Accept(char* str)
-	{
-		if (!_stricmp(str, m_stringToFind))
-			return true;
-		else
-			return false;
-	}
-};
-
 
 // 08
 struct BSIntrusiveRefCounted

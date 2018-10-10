@@ -1,8 +1,6 @@
 #pragma once
 
 #include "skse64_common/Relocation.h"
-#include <string>
-#include "ITypes.h"
 
 // this has been tested to work for non-varargs functions
 // varargs functions end up with 'this' passed as the last parameter (ie. probably broken)

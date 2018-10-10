@@ -1,6 +1,4 @@
 #include "SafeWrite.h"
-#include <windows.h>
-
 
 void SafeWriteBuf(uintptr_t addr, void * data, size_t len)
 {

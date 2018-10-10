@@ -1,5 +1,5 @@
 #include "Utilities.h"
-
+#include <string>
 
 std::string GetRuntimePath()
 {
@@ -102,7 +102,6 @@ const std::string & GetOSInfoStr()
 
 		info.dwOSVersionInfoSize = sizeof(info);
 
-		/*
 		if(GetVersionEx(&info))
 		{
 			char	buf[256];
@@ -111,7 +110,7 @@ const std::string & GetOSInfoStr()
 
 			result = buf;
 		}
-		else*/
+		else
 		{
 			result = "unknown";
 		}
