@@ -47,6 +47,12 @@ void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message)
 				g_messagingInterface->Dispatch(g_pluginHandle, kPapyrusVR_Message_Init, &apiMessage, sizeof(apiMessage), NULL);
 			}
 		}
+
+		if (message->type == SKSEMessagingInterface::kMessage_DataLoaded)
+		{
+			//Register manifest file
+			PapyrusVR::VRManager::GetInstance().RegisterInputActions();
+		}
 	}
 }
 

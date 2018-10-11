@@ -8,7 +8,7 @@ void* HookVRSystemFactory::Build(void* realInterface)
 {
 	if (realInterface != nullptr)
 	{
-		_MESSAGE("Hooked IVRSystem");
+		_MESSAGE("[OpenVR_Hook] Hooked IVRSystem");
 		VRManager::GetInstance().InitVRSystem((vr::IVRSystem*)realInterface);
 		return (void*)(new HookVRSystem((vr::IVRSystem*)realInterface));
 	}

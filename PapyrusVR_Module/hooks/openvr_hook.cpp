@@ -14,12 +14,12 @@ static void *VR_CALLTYPE Hook_VR_GetGenericInterface(const char *pchInterfaceVer
 	if (interfaceTranslationMap.count(pchInterfaceVersion) != 0)
 	{
 		IHookInterfaceFactory* translatedVersion = interfaceTranslationMap[pchInterfaceVersion];
-		_MESSAGE("Custom interface %s defined for original interface %s", translatedVersion->GetWrappedVersion().c_str(), pchInterfaceVersion);
+		_MESSAGE("[OpenVR_Hook] Custom interface %s defined for original interface %s", translatedVersion->GetWrappedVersion().c_str(), pchInterfaceVersion);
 		void* requestedInterface = OpenVR_VR_GetGenericInterface(translatedVersion->GetWrappedVersion().c_str(), peError);
 		void* builtInterface = translatedVersion->Build(requestedInterface);
 		if (builtInterface == nullptr)
 		{
-			_MESSAGE("Hooked cannot cast interface %s to anything...", typeid(requestedInterface).name());
+			_MESSAGE("[OpenVR_Hook] Hooked cannot cast interface %s to anything...", typeid(requestedInterface).name());
 			return requestedInterface;
 		}
 		else
@@ -27,7 +27,7 @@ static void *VR_CALLTYPE Hook_VR_GetGenericInterface(const char *pchInterfaceVer
 	}
 	else
 	{
-		_MESSAGE("No custom interface defined for version: %s", pchInterfaceVersion);
+		_MESSAGE("[OpenVR_Hook] No custom interface defined for version: %s", pchInterfaceVersion);
 		return OpenVR_VR_GetGenericInterface(pchInterfaceVersion, peError);
 	}
 }
@@ -38,8 +38,9 @@ bool DoHook()
 	uintptr_t* pVR_GetGenericInterface = (uintptr_t*)GetIATAddr((UInt8 *)GetModuleHandle(NULL), "openvr_api.dll", "VR_GetGenericInterface");
 
 	//Can't find VR_GetGenericInterface
-	if (pVR_GetGenericInterface == 0)
+	if (pVR_GetGenericInterface == nullptr)
 		return false;
+
 
 	//Creates translation map to wrap older OpenVR versions to new ones
 	interfaceTranslationMap.emplace(std::string(SkyrimVR_IVRSystem_Version), (IHookInterfaceFactory*) new HookVRSystemFactory());

@@ -8,7 +8,7 @@ void* HookVRCompositorFactory::Build(void * realInterface)
 {
 	if (realInterface != nullptr)
 	{
-		_MESSAGE("Hooked IVRCompositor");
+		_MESSAGE("[OpenVR_Hook] Hooked IVRCompositor");
 		VRManager::GetInstance().InitVRCompositor((vr::IVRCompositor*)realInterface);
 		return (void*)(new HookVRCompositor((vr::IVRCompositor*)realInterface));
 	}

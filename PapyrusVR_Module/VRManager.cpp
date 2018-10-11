@@ -1,4 +1,5 @@
 #include "VRManager.h"
+#include "DirUtils.h"
 
 namespace PapyrusVR
 {
@@ -21,6 +22,48 @@ namespace PapyrusVR
 		return _compositor != nullptr && _vr != nullptr;
 	}
 
+	void VRManager::RegisterInputActions()
+	{
+		if (IsInitialized())
+		{
+			_MESSAGE("[VRManager] Registering custom input actions to SteamVR Input");
+
+			//TODO: SteamVR Input
+			//DEBUG CODE
+			/*const char* bindingFileDir = GetCurrentWorkingDir().append("\\Data\\SKSE\\Plugins\\PapyrusVR\\bindings.json").c_str();
+			_MESSAGE("[VRManager] Loading binding file from %s", bindingFileDir);
+			vr::EVRInputError error = vr::VRInput()->SetActionManifestPath(bindingFileDir);
+
+			if (error != vr::EVRInputError::VRInputError_None)
+				_MESSAGE("Error in registering action manifest to SteamVR Input (%d)", error);*/
+
+			//DEBUG CODE, Don't enable you'll lose every controller binding
+			/*vr::VRActionHandle_t test1;
+			vr::VRActionHandle_t test2;
+			vr::VRActionHandle_t test3;
+			vr::VRActionHandle_t test4;
+			vr::VRActionHandle_t test5;
+			vr::VRActionHandle_t test6;
+			vr::VRActionSetHandle_t set_test1;
+			vr::VRActionSetHandle_t set_test2;
+
+			error = vr::VRInput()->GetActionSetHandle("/actions/main/in/OpenInventory", &test1);
+			error = vr::VRInput()->GetActionSetHandle("/actions/driving/in/HonkHorn", &test2);
+			error = vr::VRInput()->GetActionSetHandle("/actions/driving/out/SpeedBump", &test3);
+			error = vr::VRInput()->GetActionSetHandle("/actions/driving/in/Throttle", &test4);
+			error = vr::VRInput()->GetActionSetHandle("/actions/main/in/RightHand", &test5);
+			error = vr::VRInput()->GetActionSetHandle("/actions/main/in/RightHand_Anim", &test6);
+
+			error = vr::VRInput()->GetActionSetHandle("/actions/main", &set_test1);
+			error = vr::VRInput()->GetActionSetHandle("/actions/driving", &set_test2);
+
+			if (error != vr::EVRInputError::VRInputError_None)
+				_MESSAGE("Error in registering actions to SteamVR Input (%d)", error);
+			*/
+			
+		}
+	}
+
 	clock_t lastFrame = clock();
 	clock_t thisFrame;
 	double deltaTime = 0.0f;
@@ -32,6 +75,10 @@ namespace PapyrusVR
 			thisFrame = clock();
 			deltaTime = double(thisFrame - lastFrame) / CLOCKS_PER_SEC;
 			lastFrame = thisFrame;
+
+			//TODO: SteamVR Input
+			//Updates SteamVR Input Actions
+			//vr::VRInput()->UpdateActionState(...);
 
 			vr::VRCompositorError error = _compositor->GetLastPoses((vr::TrackedDevicePose_t*)_renderPoses, k_unMaxTrackedDeviceCount, (vr::TrackedDevicePose_t*)_gamePoses, k_unMaxTrackedDeviceCount);
 			if (error && error != vr::EVRCompositorError::VRCompositorError_None)

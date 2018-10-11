@@ -32,6 +32,9 @@
     <ClCompile Include="hooks\HookVRCompositor.cpp">
       <Filter>hook</Filter>
     </ClCompile>
+    <ClCompile Include="DirUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def">
@@ -56,6 +59,9 @@
     </ClInclude>
     <ClInclude Include="hooks\IHookInterfaceFactory.h">
       <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="DirUtils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

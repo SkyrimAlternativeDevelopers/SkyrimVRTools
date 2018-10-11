@@ -84,6 +84,8 @@ namespace PapyrusVR
 		void operator=(VRManager const&) = delete;
 		void InitVRCompositor(vr::IVRCompositor* compositor);
 		void InitVRSystem(vr::IVRSystem* vrSystem);
+		void RegisterInputActions();
+
 		void UpdatePoses();
 		void ProcessHapticEvents(vr::TrackedDeviceIndex_t unControllerDeviceIndex, uint32_t unAxisId, unsigned short usDurationMicroSec);
 

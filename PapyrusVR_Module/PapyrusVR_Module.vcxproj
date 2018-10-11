@@ -124,6 +124,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DirUtils.cpp" />
     <ClCompile Include="hooks\HookVRCompositor.cpp" />
     <ClCompile Include="hooks\HookVRSystem.cpp" />
     <ClCompile Include="hooks\openvr_hook.cpp" />
@@ -132,6 +133,7 @@
     <ClCompile Include="VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DirUtils.h" />
     <ClInclude Include="hooks\IHookInterfaceFactory.h" />
     <ClInclude Include="hooks\HookVRCompositor.h" />
     <ClInclude Include="hooks\HookVRSystem.h" />
