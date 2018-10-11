@@ -1,6 +1,9 @@
 #include "Utilities.h"
 #include <string>
 
+// Disable deprecated warning/error from GetVersionExA
+#pragma warning(disable: 4996)
+
 std::string GetRuntimePath()
 {
 	static char	appPath[4096] = { 0 };
