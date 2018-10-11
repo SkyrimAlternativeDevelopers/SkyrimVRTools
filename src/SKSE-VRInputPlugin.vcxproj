@@ -111,8 +111,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="common\IDebugLog.cpp" />
-    <ClCompile Include="common\IErrors.cpp" />
     <ClCompile Include="openvrhooks.cpp" />
     <ClCompile Include="papyrusvr_api\collisions\LocalOverlapObject.cpp" />
     <ClCompile Include="papyrusvr_api\collisions\Sphere.cpp" />
@@ -122,19 +120,6 @@
     <ClCompile Include="papyrusvr_api\VRManager.cpp" />
     <ClCompile Include="ScaleformVR.cpp" />
     <ClCompile Include="SKSE-VRInputPlugin.cpp" />
-    <ClCompile Include="skse64\GameAPI.cpp" />
-    <ClCompile Include="skse64\GameTypes.cpp" />
-    <ClCompile Include="skse64\GameUtilities.cpp" />
-    <ClCompile Include="skse64\PapyrusArgs.cpp" />
-    <ClCompile Include="skse64\PapyrusInterfaces.cpp" />
-    <ClCompile Include="skse64\PapyrusNativeFunctions.cpp" />
-    <ClCompile Include="skse64\PapyrusVM.cpp" />
-    <ClCompile Include="skse64\ScaleformAPI.cpp" />
-    <ClCompile Include="skse64\ScaleformCallbacks.cpp" />
-    <ClCompile Include="skse64\ScaleformValue.cpp" />
-    <ClCompile Include="skse64_common\Relocation.cpp" />
-    <ClCompile Include="skse64_common\SafeWrite.cpp" />
-    <ClCompile Include="skse64_common\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
@@ -142,6 +127,9 @@
   <ItemGroup>
     <ProjectReference Include="common\common_vc14.vcxproj">
       <Project>{472e19ab-def0-42df-819b-18722e8dc822}</Project>
+    </ProjectReference>
+    <ProjectReference Include="skse64\skse64.vcxproj">
+      <Project>{639411c0-fc23-4819-a0c5-429a4e5d8a51}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
