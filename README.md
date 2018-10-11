@@ -1,5 +1,5 @@
 # PapyrusVR
-## Current SKSE Target Version: 2.0.8
+## Current SKSE Target Version: 2.0.10
 Initial SKSE Plugin to expose OpenVR to Papyrus
 
 #TODO
@@ -7,6 +7,13 @@ Initial SKSE Plugin to expose OpenVR to Papyrus
 - Papyrus Methods
 - Overlap Events
 - Gestures Events
+- SteamVR Input
+- ScaleformAPI
+
+## OpenVR Version
+This branch was created to compile against OpenVR 1.0.16. In order to run the game you must download the correct [openvr_api.dll](https://github.com/ValveSoftware/openvr/raw/6aacebd1246592d9911439d5abd0c657b8948ab0/bin/win64/openvr_api.dll) from Valve's repository and replace the old SkyrimVR's version with it.
+
+This change was made to try and get the SteamVR Input API working and enabling modders to make custom actions sets.
 
 ## Solution Setup
 ### File Structure
@@ -33,10 +40,10 @@ You'll also need static .lib files for openvr and SKSEVR.
 ### Configuring Project Variables
 
 In order to get the project to build you have to place the following files in *Root\PapyrusVR_Module\libs*:
-- openvr_api.lib (OpenVR Version 1.0.10)
+- openvr_api.lib (OpenVR Version 1.0.16)
 - common_vc14.lib    (SKSE common project built as static library)
 - skse64_common.lib  (skse64_common project built as static library)
-- sksevr_1_3_64.lib  (skse64 project built as static library)
+- sksevr_1_4_15.lib  (skse64 project built as static library)
 
 
 ### Configuring SkyrimVR Path
@@ -53,7 +60,7 @@ Download the API headers files from the [releases page](https://github.com/artum
 
 Make sure to add the headers to your include path.
 
-You'll also need the OpenVR v1.0.10 libs and headers file. (We plan to remove this dependecy further down the road)
+You'll also need the **OpenVR v1.0.16** libs and headers file. (We plan to remove this dependecy further down the road)
 
 The PapyrusVR API currently gives you access to the VRManager and to the pose event dispatcher.
 
