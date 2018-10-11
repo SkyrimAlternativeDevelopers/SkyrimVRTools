@@ -32,7 +32,7 @@ In order to build this plugin you must have the following folder structure:
 |  |-- sksevr
 |   ....
 |-- openvr
-   |-- openvr.h (headers for OpenVR 1.0.10, version currently used by SkyrimVR v1.3.64)
+   |-- openvr.h (headers for OpenVR 1.0.16)
 ```
 
 You'll also need static .lib files for openvr and SKSEVR.
