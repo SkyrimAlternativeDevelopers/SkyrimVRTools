@@ -27,6 +27,7 @@
 #include "common/IDebugLog.h"
 
 #include "papyrusvr_api/PapyrusVR.h"  // for integration with PapyrusVR - need to call update from WaitGetPose() in shim
+#include "ScaleformVR.h"
 
 using namespace vr;
 
@@ -44,11 +45,12 @@ OpenVRHookMgr* OpenVRHookMgr::GetInstance()
 
 static VR_GetGenericInterfaceFunc  VR_GetGenericInterface_RealFunc;
 
-
 // shim class for IVRSystem 
 class FakeVRSystem : public vr::IVRSystem
 {
 public:
+	bool m_getControllerStateShutoff = false;
+
 	FakeVRSystem(vr::IVRSystem* realSystem)
 	{
 		m_system = realSystem;  // Set pointer to the real IVRsystem object from opevr_api.dll
@@ -396,7 +398,37 @@ public:
 	* is invalid. This function is deprecated in favor of the new IVRInput system. */
 	virtual bool GetControllerState(vr::TrackedDeviceIndex_t unControllerDeviceIndex, vr::VRControllerState_t *pControllerState, uint32_t unControllerStateSize)
 	{
-		return m_system->GetControllerState(unControllerDeviceIndex, pControllerState, unControllerStateSize);
+		const int controllerCount = 2;
+		static vr::VRControllerState_t lastControllerState[controllerCount];
+		static bool shutoffStateUpdate = false;
+
+		vr::ETrackedControllerRole hand = (unControllerDeviceIndex == GetTrackedDeviceIndexForControllerRole(vr::ETrackedControllerRole::TrackedControllerRole_LeftHand)) ?
+			vr::ETrackedControllerRole::TrackedControllerRole_LeftHand :
+			vr::ETrackedControllerRole::TrackedControllerRole_RightHand;
+
+		// We're only watching for the controller mapped to right and left hand.
+		// If the game requested access to anything else, just let it through.
+		if (hand != vr::ETrackedControllerRole::TrackedControllerRole_LeftHand && hand != vr::ETrackedControllerRole::TrackedControllerRole_RightHand)
+			return m_system->GetControllerState(unControllerDeviceIndex, pControllerState, sizeof(vr::VRControllerState_t));
+
+		vr::VRControllerState_t* lastState = &lastControllerState[hand - 1];
+		vr::VRControllerState_t curState;
+
+		// Grab the state of the controller
+		bool result = m_system->GetControllerState(unControllerDeviceIndex, &curState, sizeof(vr::VRControllerState_t));
+
+		// Give the game access to the controller depending on the shutoff flag
+		if (m_getControllerStateShutoff == false) {
+			memcpy(pControllerState, &curState, sizeof(vr::VRControllerState_t));
+		}
+
+		// Dispatch the controller state to scaleform there are handlers registered
+		ScaleformVR::DispatchControllerState(hand, curState);
+
+		// curState = lastState
+		memcpy(lastState, &curState, sizeof(vr::VRControllerState_t));
+
+		return result;
 	}
 
 	/** fills the supplied struct with the current state of the controller and the provided pose with the pose of
@@ -890,6 +922,7 @@ static void * VR_CALLTYPE Hook_VR_GetGenericInterface_Execute(const char *pchInt
 		_MESSAGE("Hooking VR interface %s !", pchInterfaceVersion);
 		FakeVRSystem* fakeVRSystem = new FakeVRSystem((IVRSystem*)vrInterface);
 		OpenVRHookMgr::GetInstance()->SetVRSystem((IVRSystem*)vrInterface);
+		OpenVRHookMgr::GetInstance()->SetFakeVRSystem(fakeVRSystem);
 		return (void*)fakeVRSystem;
 	}
 
@@ -898,6 +931,7 @@ static void * VR_CALLTYPE Hook_VR_GetGenericInterface_Execute(const char *pchInt
 		_MESSAGE("Hooking VR interface %s !", pchInterfaceVersion);
 		FakeVRCompositor* fakeVRCompositor = new FakeVRCompositor((IVRCompositor*)vrInterface);
 		OpenVRHookMgr::GetInstance()->SetVRCompositor((IVRCompositor*)vrInterface);
+		OpenVRHookMgr::GetInstance()->SetFakeVRCompositor(fakeVRCompositor);
 		return (void*)fakeVRCompositor;
 	}
 
@@ -929,3 +963,13 @@ bool DoOpenVRHook()
 	return true;
 }
 
+
+bool getControllerStateUpdateShutoff()
+{
+	return OpenVRHookMgr::GetInstance()->GetFakeVRSystem()->m_getControllerStateShutoff;
+}
+
+void setControllerStateUpdateShutoff(bool enable)
+{
+	OpenVRHookMgr::GetInstance()->GetFakeVRSystem()->m_getControllerStateShutoff = enable;
+}
