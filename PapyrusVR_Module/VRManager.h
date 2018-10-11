@@ -24,8 +24,8 @@ namespace PapyrusVR
 	private:
 		VRManager() : _nextLocalOverlapObjectHandle(1) { }
 
-		vr::IVRCompositor* _compositor;
-		vr::IVRSystem* _vr;
+		vr::IVRCompositor* _compositor = nullptr;
+		vr::IVRSystem* _vr = nullptr;
 
 		TrackedDevicePose _renderPoses[k_unMaxTrackedDeviceCount]; //Used to store available poses
 		TrackedDevicePose _gamePoses[k_unMaxTrackedDeviceCount]; //Used to store available poses
@@ -34,9 +34,11 @@ namespace PapyrusVR
 		std::mutex _vrLocalOverlapObjectMapMutex;
 		std::mutex _vrButtonEventsListenersMutex;
 		std::mutex _vrOverlapEventsListenersMutex;
+		std::mutex _vrUpdateListenersMutex;
 
 		std::list<OnVRButtonEvent> _vrButtonEventsListeners;
 		std::list<OnVROverlapEvent> _vrOverlapEventsListeners;
+		std::list<OnVRUpdateEvent> _vrUpdateListeners;
 
 		UInt32 _nextLocalOverlapObjectHandle;
 		std::map<UInt32, LocalOverlapObject*> _localOverlapObjects;
@@ -48,6 +50,7 @@ namespace PapyrusVR
 
 		void DispatchVRButtonEvent(VREventType eventType, EVRButtonId button, VRDevice device);
 		void DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectHandle, VRDevice device);
+		void DispatchVRUpdateEvent(float deltaTime);
 
 		void ProcessControllerEvents(VRDevice currentDevice);
 		void ProcessOverlapEvents(VRDevice currentDevice);
@@ -57,10 +60,9 @@ namespace PapyrusVR
 		{
 			if (listener)
 			{
-				listMutex->lock();
+				std::lock_guard<std::mutex> lock(*listMutex);
 				list->remove(listener);
 				list->push_back(listener);
-				listMutex->unlock();
 			}
 		};
 
@@ -69,16 +71,16 @@ namespace PapyrusVR
 		{
 			if (listener)
 			{
-				listMutex->lock();
+				std::lock_guard<std::mutex> lock(*listMutex);
 				list->remove(listener);
-				listMutex->unlock();
 			}
 		};
 
 	public:
 		VRManager(VRManager const&) = delete;
 		void operator=(VRManager const&) = delete;
-		void Init();
+		void InitVRCompositor(vr::IVRCompositor* compositor);
+		void InitVRSystem(vr::IVRSystem* vrSystem);
 		void UpdatePoses();
 
 		bool IsInitialized();
@@ -88,6 +90,8 @@ namespace PapyrusVR
 		void UnregisterVRButtonListener(OnVRButtonEvent listener) { GenericUnregisterForEvent(listener, &_vrButtonEventsListeners, &_vrButtonEventsListenersMutex); }
 		void RegisterVROverlapListener(OnVROverlapEvent listener) { GenericRegisterForEvent(listener, &_vrOverlapEventsListeners, &_vrOverlapEventsListenersMutex); }
 		void UnregisterVROverlapListener(OnVROverlapEvent listener) { GenericUnregisterForEvent(listener, &_vrOverlapEventsListeners, &_vrOverlapEventsListenersMutex); }
+		void RegisterVRUpdateListener(OnVRUpdateEvent listener) { GenericRegisterForEvent(listener, &_vrUpdateListeners, &_vrUpdateListenersMutex); }
+		void UnregisterVRUpdateListener(OnVRUpdateEvent listener) { GenericUnregisterForEvent(listener, &_vrUpdateListeners, &_vrUpdateListenersMutex); }
 
 		//Overlap Engine Methods
 		UInt32 CreateLocalOverlapSphere(float radius, Matrix34* transform, VRDevice attachedDevice = VRDevice::VRDevice_Unknown);

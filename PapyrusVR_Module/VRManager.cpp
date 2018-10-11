@@ -2,31 +2,40 @@
 
 namespace PapyrusVR
 {
-	void VRManager::Init()
+	void VRManager::InitVRCompositor(vr::IVRCompositor* compositor)
 	{
-		if ((_compositor = vr::VRCompositor()))
-			_MESSAGE("Compositor is reachable, proceding with setup...");
-		else
-			_MESSAGE("Failed to get compositor");
+		_MESSAGE("[VRManager] Setting VRManager compositor to address %p", compositor);
+		if (compositor != nullptr)
+			_compositor = compositor;
+	}
 
-		if ((_vr = vr::VRSystem()))
-			_MESSAGE("VR System is reachable, proceding with setup...");
-		else
-			_MESSAGE("Failed to get VR System");
+	void VRManager::InitVRSystem(vr::IVRSystem* vrSystem)
+	{
+		_MESSAGE("[VRManager] Setting VRManager system to address %p", vrSystem);
+		if (vrSystem != nullptr)
+			_vr = vrSystem;
 	}
           
 	bool VRManager::IsInitialized()
 	{
-		return _compositor && _vr;
+		return _compositor != nullptr && _vr != nullptr;
 	}
 
+	clock_t lastFrame = clock();
+	clock_t thisFrame;
+	double deltaTime = 0.0f;
 	void VRManager::UpdatePoses()
 	{
 		if (IsInitialized())
 		{
-			vr::VRCompositorError error = _compositor->GetLastPoses((vr::TrackedDevicePose_t*)_renderPoses, vr::k_unMaxTrackedDeviceCount, (vr::TrackedDevicePose_t*)_gamePoses, vr::k_unMaxTrackedDeviceCount);
+			//Calculate deltaTime
+			thisFrame = clock();
+			deltaTime = double(thisFrame - lastFrame) / CLOCKS_PER_SEC;
+			lastFrame = thisFrame;
+
+			vr::VRCompositorError error = _compositor->GetLastPoses((vr::TrackedDevicePose_t*)_renderPoses, k_unMaxTrackedDeviceCount, (vr::TrackedDevicePose_t*)_gamePoses, k_unMaxTrackedDeviceCount);
 			if (error && error != vr::EVRCompositorError::VRCompositorError_None)
-				_MESSAGE("Error while retriving game poses!");
+				_MESSAGE("[VRManager] Error while retriving game poses!");
 
 			//HMD
 			UpdateTrackedDevicesMapEntry(VRDevice::VRDevice_HMD, k_unTrackedDeviceIndex_Hmd);
@@ -55,6 +64,9 @@ namespace PapyrusVR
 			//Process Overlaps for every valid tracked object
 			for (int i = 0; i < VRDevice::VRDevice_LeftController + 1; i++)
 				ProcessOverlapEvents((VRDevice)i);
+
+			//Dispatch update event
+			DispatchVRUpdateEvent(deltaTime);
 		}
 	}
 
@@ -170,6 +182,18 @@ namespace PapyrusVR
 	}
 
 	//Notifies all listeners that an event has occured
+	void VRManager::DispatchVRUpdateEvent(float deltaTime)
+	{
+		std::lock_guard<std::mutex> lock(_vrUpdateListenersMutex);
+
+		for (OnVRUpdateEvent& listener : _vrUpdateListeners)
+		{
+			if (listener)
+				(*listener)(deltaTime);
+		}
+	}
+
+	//Notifies all listeners that an event has occured
 	void VRManager::DispatchVRButtonEvent(VREventType eventType, EVRButtonId button, VRDevice device)
 	{
         std::lock_guard<std::mutex> lock( _vrButtonEventsListenersMutex );
@@ -185,7 +209,7 @@ namespace PapyrusVR
 	void VRManager::DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectHandle, VRDevice device)
 	{
 		//TODO: Filter events?
-		_MESSAGE("Dispatching overlap event %d from device %d in handle %d", eventType, device, objectHandle);
+		_MESSAGE("[VRManager] Dispatching overlap event %d from device %d in handle %d", eventType, device, objectHandle);
 
         std::lock_guard<std::mutex> lock( _vrOverlapEventsListenersMutex );
 
@@ -195,15 +219,15 @@ namespace PapyrusVR
 
 	UInt32 VRManager::CreateLocalOverlapSphere(float radius, Matrix34* transform, VRDevice attachedDevice)
 	{
-		_MESSAGE("CreateLocalOverlapSphere");
+		_MESSAGE("[VRManager] CreateLocalOverlapSphere");
 
 		if (!transform)
 			return 0; //handle = 0, ERROR
 
 		Sphere* overlapSphere = new Sphere(radius);
-		_MESSAGE("Radius %f", radius);
-		_MESSAGE("Transform size %d", sizeof(*transform));
-		_MESSAGE("Attached to deviceID %d", attachedDevice);
+		_MESSAGE("[VRManager] Radius %f", radius);
+		_MESSAGE("[VRManager] Transform size %d", sizeof(*transform));
+		_MESSAGE("[VRManager] Attached to deviceID %d", attachedDevice);
 
 		TrackedDevicePose** attachedTo = NULL;
 		if (attachedDevice != VRDevice_Unknown)

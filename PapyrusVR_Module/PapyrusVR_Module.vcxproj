@@ -124,11 +124,18 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="hooks\HookVRCompositor.cpp" />
+    <ClCompile Include="hooks\HookVRSystem.cpp" />
+    <ClCompile Include="hooks\openvr_hook.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PapyrusVR.cpp" />
     <ClCompile Include="VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hooks\IHookInterfaceFactory.h" />
+    <ClInclude Include="hooks\HookVRCompositor.h" />
+    <ClInclude Include="hooks\HookVRSystem.h" />
+    <ClInclude Include="hooks\openvr_hook.h" />
     <ClInclude Include="PapyrusVR.h" />
     <ClInclude Include="VRManager.h" />
   </ItemGroup>

@@ -1,4 +1,6 @@
 #include "PapyrusVR.h"
+#include <ctime>
+#include "hooks/openvr_hook.h"
 
 namespace PapyrusVR 
 {
@@ -23,13 +25,12 @@ namespace PapyrusVR
 		....
 	*/
 	//OpenVR Hook
-	RelocAddr <uintptr_t>	OpenVR_Call(0xC50C83);
-	BranchTrampoline		l_LocalBranchTrampoline;
+	//RelocAddr <uintptr_t>	OpenVR_Call(0xC50C83);
+	//BranchTrampoline		l_LocalBranchTrampoline;
 
 	//Custom Pose Event
 	BSFixedString poseUpdateEventName("OnPosesUpdate");
 	RegistrationSetHolder<TESForm*>				g_posesUpdateEventRegs;
-	PoseUpdateListeners							g_poseUpdateListeners;
 
 	//Custom Button Events
 	BSFixedString vrButtonEventName("OnVRButtonEvent");
@@ -236,46 +237,7 @@ namespace PapyrusVR
 
 	#pragma endregion
 
-	#pragma region OpenVR Hooks
-
-		//SkyrimVR+0xC50C69
-		clock_t lastFrame = clock();
-		clock_t thisFrame;
-		double deltaTime = 0.0f;
-		void OnVRUpdate()
-		{
-			//Calculate deltaTime
-			thisFrame = clock();
-			deltaTime = double(thisFrame - lastFrame) / CLOCKS_PER_SEC;
-			lastFrame = thisFrame;
-
-			//Update Poses
-			VRManager::GetInstance().UpdatePoses();
-
-			//Notify Listeners
-            std::lock_guard<std::mutex> lock( listenersMutex );
-
-			for (OnPoseUpdateCallback& callback : g_poseUpdateListeners)
-				callback(deltaTime);
-
-
-			//Notify Papyrus scripts
-			//WARNING: Disabled cause this will currently freeze the game every 90 seconds
-			//if (g_posesUpdateEventRegs.m_data.size() > 0)
-			//	g_posesUpdateEventRegs.ForEach(
-			//		EventQueueFunctor0(poseUpdateEventName)
-			//	);
-		}
-
-	#pragma endregion
-
 	#pragma region API
-		void RegisterPoseUpdateListener(OnPoseUpdateCallback callback)
-		{
-            std::lock_guard<std::mutex> lock( listenersMutex );
-
-			g_poseUpdateListeners.push_back(callback);
-		}
 
 		//Returns the VRManager singleton instance
 		VRManagerAPI* GetVRManager()
@@ -298,7 +260,7 @@ namespace PapyrusVR
 					{
 						_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
 						apiMessage.GetVRManager = GetVRManager;
-						apiMessage.RegisterPoseUpdateListener = RegisterPoseUpdateListener;
+						//apiMessage.RegisterPoseUpdateListener = GetVRManager()->RegisterVRUpdateListener;
 
 						//Sends pointers to API functions/classes
 						g_messagingInterface->Dispatch(*g_pluginHandle, kPapyrusVR_Message_Init, &apiMessage, sizeof(apiMessage), NULL);
@@ -306,9 +268,9 @@ namespace PapyrusVR
 				}
 
 				//Ready to Initialize VRManager
-				if (message->type == SKSEMessagingInterface::kMessage_DataLoaded)
-					if(!VRManager::GetInstance().IsInitialized())
-						VRManager::GetInstance().Init();
+				//if (message->type == SKSEMessagingInterface::kMessage_DataLoaded)
+				//	if(!VRManager::GetInstance().IsInitialized())
+				//		VRManager::GetInstance().Init();
 			}
 		}
 
@@ -418,12 +380,12 @@ namespace PapyrusVR
 
 		registry->RegisterFunction(new NativeFunction0 <StaticFunctionTag, void>("TimeSinceLastCall", "PapyrusVR", PapyrusVR::TimeSinceLastCall, registry)); //Debug function
 
-		_MESSAGE("Creating trampoline");
+		/*_MESSAGE("Creating trampoline");
 		if (!l_LocalBranchTrampoline.Create(1024 * 64))
 		{
 			_MESSAGE("Can't create local branch trampoline!");
 			return false;
-		}
+		}*/
 
 		_MESSAGE("Registering for VR Button Events");
 		VRManager::GetInstance().RegisterVRButtonListener(PapyrusVR::OnVRButtonEventRecived);
@@ -431,9 +393,6 @@ namespace PapyrusVR
 
 		_MESSAGE("Registering for VR Overlap Events");
 		VRManager::GetInstance().RegisterVROverlapListener(PapyrusVR::OnVROverlapEventRecived);
-
-		_MESSAGE("Hooking into OpenVR calls");
-		l_LocalBranchTrampoline.Write5Call(OpenVR_Call, GetFnAddr(&PapyrusVR::OnVRUpdate));
 
 		return true;
 	}

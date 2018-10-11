@@ -5,6 +5,7 @@
 
 #include "PapyrusVR.h"
 #include "VRManager.h"
+#include "hooks/openvr_hook.h"
 
 static PluginHandle					g_pluginHandle = kPluginHandle_Invalid;
 static SKSEPapyrusInterface         * g_papyrus = NULL;
@@ -65,13 +66,20 @@ extern "C" {
 		//__debugbreak();
 
 		//Check if the function registration was a success...
+		_MESSAGE("Registering Papyrus native functions...");
 		bool btest = g_papyrus->Register(PapyrusVR::RegisterFuncs);
-
 		if (btest) {
-			_MESSAGE("Register Succeeded");
+			_MESSAGE("Papyrus Functions Register Succeeded");
 		}
 
-		return true;
+		_MESSAGE("Hooking into OpenVR calls");
+		if (!DoHook())
+		{
+			_MESSAGE("Failed to hook to OpenVR...");
+			btest = false;
+		}
+
+		return btest;
 	}
 
 };

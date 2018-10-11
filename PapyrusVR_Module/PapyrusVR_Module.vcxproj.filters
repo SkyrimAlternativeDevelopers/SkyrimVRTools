@@ -9,6 +9,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="hook">
+      <UniqueIdentifier>{92868268-59b1-4f6f-9da7-156dd5081e2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -19,6 +22,15 @@
     </ClCompile>
     <ClCompile Include="VRManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\openvr_hook.cpp">
+      <Filter>hook</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\HookVRSystem.cpp">
+      <Filter>hook</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\HookVRCompositor.cpp">
+      <Filter>hook</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +44,18 @@
     </ClInclude>
     <ClInclude Include="VRManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\openvr_hook.h">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\HookVRCompositor.h">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\HookVRSystem.h">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\IHookInterfaceFactory.h">
+      <Filter>hook</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

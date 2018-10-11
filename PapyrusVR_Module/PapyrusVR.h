@@ -121,8 +121,6 @@ namespace PapyrusVR
 	void OnVRButtonEventRecived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId);
 	void OnVROverlapEventRecived(VROverlapEvent eventType, UInt32 objectHandle, VRDevice deviceId);
 
-	void OnVRUpdate(); //Called once every pose update by the rendering thread
-
 	#pragma region API
 
 	//Papyrus
@@ -131,7 +129,6 @@ namespace PapyrusVR
 	//C++ Plugins
 	typedef std::function<void(float)> OnPoseUpdateCallback;
 	typedef std::list<OnPoseUpdateCallback> PoseUpdateListeners;
-	extern PoseUpdateListeners g_poseUpdateListeners; 
 	VRManagerAPI* GetVRManager();
 
 	#pragma endregion
