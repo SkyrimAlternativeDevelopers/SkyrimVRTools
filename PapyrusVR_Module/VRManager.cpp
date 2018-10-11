@@ -162,6 +162,24 @@ namespace PapyrusVR
 		}
 	}
 
+	void VRManager::ProcessHapticEvents(vr::TrackedDeviceIndex_t unControllerDeviceIndex, uint32_t unAxisId, unsigned short usDurationMicroSec)
+	{
+		if (IsInitialized())
+		{
+			//DEBUG Code
+			vr::TrackedDeviceIndex_t leftHandIndex = _vr->GetTrackedDeviceIndexForControllerRole(vr::ETrackedControllerRole::TrackedControllerRole_LeftHand);
+			vr::TrackedDeviceIndex_t rightHandIndex = _vr->GetTrackedDeviceIndexForControllerRole(vr::ETrackedControllerRole::TrackedControllerRole_RightHand);
+
+			//Finds device (better map the values somewhere instead of checking each time)
+			VRDevice eventDevice =
+				(unControllerDeviceIndex == leftHandIndex) ? VRDevice::VRDevice_LeftController :
+				(unControllerDeviceIndex == rightHandIndex) ? VRDevice::VRDevice_RightController :
+				VRDevice::VRDevice_Unknown;
+
+			DispatchVRHapticEvent(unAxisId, usDurationMicroSec, eventDevice);
+		}
+	}
+
 	void VRManager::ProcessOverlapEvents(VRDevice currentDevice)
 	{
 		// O(_localOverlapObjects.len)
@@ -215,6 +233,15 @@ namespace PapyrusVR
 
 		for (OnVROverlapEvent& listener : _vrOverlapEventsListeners)
 			(*listener)(eventType, objectHandle, device);
+	}
+
+	//Notifies all listeners that an haptic event has occured
+	void VRManager::DispatchVRHapticEvent(UInt32 axisId, UInt32 pulseDuration, VRDevice device)
+	{
+		std::lock_guard<std::mutex> lock(_vrHapticEventsListenersMutex);
+
+		for (OnVRHapticEvent& listener : _vrHapticEventsListeners)
+			(*listener)(axisId, pulseDuration, device);
 	}
 
 	UInt32 VRManager::CreateLocalOverlapSphere(float radius, Matrix34* transform, VRDevice attachedDevice)

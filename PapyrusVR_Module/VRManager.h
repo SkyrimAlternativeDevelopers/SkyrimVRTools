@@ -34,10 +34,12 @@ namespace PapyrusVR
 		std::mutex _vrLocalOverlapObjectMapMutex;
 		std::mutex _vrButtonEventsListenersMutex;
 		std::mutex _vrOverlapEventsListenersMutex;
+		std::mutex _vrHapticEventsListenersMutex;
 		std::mutex _vrUpdateListenersMutex;
 
 		std::list<OnVRButtonEvent> _vrButtonEventsListeners;
 		std::list<OnVROverlapEvent> _vrOverlapEventsListeners;
+		std::list<OnVRHapticEvent> _vrHapticEventsListeners;
 		std::list<OnVRUpdateEvent> _vrUpdateListeners;
 
 		UInt32 _nextLocalOverlapObjectHandle;
@@ -50,6 +52,7 @@ namespace PapyrusVR
 
 		void DispatchVRButtonEvent(VREventType eventType, EVRButtonId button, VRDevice device);
 		void DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectHandle, VRDevice device);
+		void DispatchVRHapticEvent(UInt32 axisId, UInt32 pulseDuration, VRDevice device);
 		void DispatchVRUpdateEvent(float deltaTime);
 
 		void ProcessControllerEvents(VRDevice currentDevice);
@@ -82,6 +85,7 @@ namespace PapyrusVR
 		void InitVRCompositor(vr::IVRCompositor* compositor);
 		void InitVRSystem(vr::IVRSystem* vrSystem);
 		void UpdatePoses();
+		void ProcessHapticEvents(vr::TrackedDeviceIndex_t unControllerDeviceIndex, uint32_t unAxisId, unsigned short usDurationMicroSec);
 
 		bool IsInitialized();
 
@@ -90,6 +94,8 @@ namespace PapyrusVR
 		void UnregisterVRButtonListener(OnVRButtonEvent listener) { GenericUnregisterForEvent(listener, &_vrButtonEventsListeners, &_vrButtonEventsListenersMutex); }
 		void RegisterVROverlapListener(OnVROverlapEvent listener) { GenericRegisterForEvent(listener, &_vrOverlapEventsListeners, &_vrOverlapEventsListenersMutex); }
 		void UnregisterVROverlapListener(OnVROverlapEvent listener) { GenericUnregisterForEvent(listener, &_vrOverlapEventsListeners, &_vrOverlapEventsListenersMutex); }
+		void RegisterVRHapticListener(OnVRHapticEvent listener) { GenericRegisterForEvent(listener, &_vrHapticEventsListeners, &_vrHapticEventsListenersMutex); }
+		void UnregisterVRHapticListener(OnVRHapticEvent listener) { GenericUnregisterForEvent(listener, &_vrHapticEventsListeners, &_vrHapticEventsListenersMutex); }
 		void RegisterVRUpdateListener(OnVRUpdateEvent listener) { GenericRegisterForEvent(listener, &_vrUpdateListeners, &_vrUpdateListenersMutex); }
 		void UnregisterVRUpdateListener(OnVRUpdateEvent listener) { GenericUnregisterForEvent(listener, &_vrUpdateListeners, &_vrUpdateListenersMutex); }
 

@@ -206,6 +206,9 @@ bool HookVRSystem::GetControllerStateWithPose(ETrackingUniverseOrigin eOrigin, v
 void HookVRSystem::TriggerHapticPulse(vr::TrackedDeviceIndex_t unControllerDeviceIndex, uint32_t unAxisId, unsigned short usDurationMicroSec)
 {
 	vr_system->TriggerHapticPulse(unControllerDeviceIndex, unAxisId, usDurationMicroSec);
+
+	//Usefull for haptic suits mods
+	VRManager::GetInstance().ProcessHapticEvents(unControllerDeviceIndex, unAxisId, usDurationMicroSec);
 }
 
 const char * HookVRSystem::GetButtonIdNameFromEnum(vr::EVRButtonId eButtonId)

@@ -36,9 +36,13 @@ namespace PapyrusVR
 	BSFixedString vrButtonEventName("OnVRButtonEvent");
 	RegistrationSetHolder<TESForm*>				g_vrButtonEventRegs;
 
-	//Custom Button Events
+	//Custom Overlap Events
 	BSFixedString vrOverlapEventName("OnVROverlapEvent");
 	RegistrationSetHolder<TESForm*>				g_vrOverlapEventRegs;
+
+	//Custom Haptics Events
+	BSFixedString vrHapticEventName("OnVRHapticEvent");
+	RegistrationSetHolder<TESForm*>				g_vrHapticEventRegs;
 
 	//API
 	std::mutex					listenersMutex; 
@@ -71,6 +75,7 @@ namespace PapyrusVR
 			PackValue(val, &arg, registry);
 		}
 		template <> void SetVMValue<SInt32>(VMValue * val, SInt32 arg) { val->SetInt(arg); }
+
 		class EventFunctor3 : public IFunctionArguments
 		{
 		public:
@@ -191,6 +196,16 @@ namespace PapyrusVR
 				_MESSAGE("UnregisterForVROverlapEvents");
 				FormUnregisterForEvent(thisForm, &g_vrOverlapEventRegs);
 			}
+			void RegisterForVRHapticEvents(StaticFunctionTag *base, TESForm * thisForm)
+			{
+				_MESSAGE("RegisterForVRHapticEvents");
+				FormRegisterForEvent(thisForm, &g_vrHapticEventRegs);
+			}
+			void UnregisterForVRHapticEvents(StaticFunctionTag *base, TESForm * thisForm)
+			{
+				_MESSAGE("UnregisterForVRHapticEvents");
+				FormUnregisterForEvent(thisForm, &g_vrHapticEventRegs);
+			}
 		#pragma endregion
 
 		#pragma region Overlap Objects
@@ -249,11 +264,11 @@ namespace PapyrusVR
 	#pragma region Messaging Interface
 
 		// Listens for SKSE events
-		void OnSKSEMessageRecived(SKSEMessagingInterface::Message* message)
+		void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message)
 		{
 			if (message)
 			{
-				_MESSAGE("Recived SKSE message %d", message->type);
+				_MESSAGE("Received SKSE message %d", message->type);
 				if (message->type == SKSEMessagingInterface::kMessage_PostPostLoad)
 				{
 					if (g_messagingInterface && g_pluginHandle)
@@ -280,7 +295,7 @@ namespace PapyrusVR
 			{
 				g_messagingInterface = messagingInterface;
 				_MESSAGE("Registering for plugin loaded message!");
-				g_messagingInterface->RegisterListener(*g_pluginHandle, "SKSE", OnSKSEMessageRecived);
+				g_messagingInterface->RegisterListener(*g_pluginHandle, "SKSE", OnSKSEMessageReceived);
 			}
 		}
 
@@ -337,7 +352,7 @@ namespace PapyrusVR
 		}
 	#pragma endregion
 
-	void OnVRButtonEventRecived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId)
+	void OnVRButtonEventReceived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId)
 	{
 		_MESSAGE("Dispatching eventType %d for button with ID: %d from device %d", eventType, buttonId, deviceId);
 		//Notify Papyrus scripts
@@ -347,13 +362,23 @@ namespace PapyrusVR
 			);
 	}
 
-	void OnVROverlapEventRecived(VROverlapEvent eventType, UInt32 objectHandle, VRDevice deviceId)
+	void OnVROverlapEventReceived(VROverlapEvent eventType, UInt32 objectHandle, VRDevice deviceId)
 	{
 		_MESSAGE("Dispatching overlap %d for device with ID: %d from handle %d", eventType, deviceId, objectHandle);
 		//Notify Papyrus scripts
-		if (g_vrButtonEventRegs.m_data.size() > 0)
-			g_vrButtonEventRegs.ForEach(
+		if (g_vrOverlapEventRegs.m_data.size() > 0)
+			g_vrOverlapEventRegs.ForEach(
 				EventFunctor3(vrOverlapEventName, eventType, objectHandle, deviceId)
+			);
+	}
+
+	void OnVRHapticEventReceived(UInt32 axisID, UInt32 pulseDuration, VRDevice device)
+	{
+		_MESSAGE("Dispatching haptic event for device with ID: %d with axisID %d and duration %d", device, axisID, pulseDuration);
+		//Notify Papyrus scripts
+		if (g_vrHapticEventRegs.m_data.size() > 0)
+			g_vrHapticEventRegs.ForEach(
+				EventFunctor3(vrHapticEventName, axisID, pulseDuration, device)
 			);
 	}
 
@@ -377,6 +402,8 @@ namespace PapyrusVR
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("UnregisterForVRButtonEvents", "PapyrusVR", PapyrusVR::UnregisterForVRButtonEvents, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("RegisterForVROverlapEvents", "PapyrusVR", PapyrusVR::RegisterForVROverlapEvents, registry));
 		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("UnregisterForVROverlapEvents", "PapyrusVR", PapyrusVR::UnregisterForVROverlapEvents, registry));
+		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("RegisterForVRHapticEvents", "PapyrusVR", PapyrusVR::RegisterForVRHapticEvents, registry));
+		registry->RegisterFunction(new NativeFunction1 <StaticFunctionTag, void, TESForm*>("UnregisterForVRHapticEvents", "PapyrusVR", PapyrusVR::UnregisterForVRHapticEvents, registry));
 
 		registry->RegisterFunction(new NativeFunction0 <StaticFunctionTag, void>("TimeSinceLastCall", "PapyrusVR", PapyrusVR::TimeSinceLastCall, registry)); //Debug function
 
@@ -388,11 +415,17 @@ namespace PapyrusVR
 		}*/
 
 		_MESSAGE("Registering for VR Button Events");
-		VRManager::GetInstance().RegisterVRButtonListener(PapyrusVR::OnVRButtonEventRecived);
+		VRManager::GetInstance().RegisterVRButtonListener(PapyrusVR::OnVRButtonEventReceived);
 
 
 		_MESSAGE("Registering for VR Overlap Events");
-		VRManager::GetInstance().RegisterVROverlapListener(PapyrusVR::OnVROverlapEventRecived);
+		VRManager::GetInstance().RegisterVROverlapListener(PapyrusVR::OnVROverlapEventReceived);
+
+		_MESSAGE("Registering for VR Haptic Events");
+		VRManager::GetInstance().RegisterVRHapticListener(PapyrusVR::OnVRHapticEventReceived);
+		
+		/*_MESSAGE("Hooking into OpenVR calls");
+		l_LocalBranchTrampoline.Write5Call(OpenVR_Call, GetFnAddr(&PapyrusVR::OnVRUpdate));*/
 
 		return true;
 	}

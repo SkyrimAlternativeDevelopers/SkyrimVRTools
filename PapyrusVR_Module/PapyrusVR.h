@@ -110,6 +110,8 @@ namespace PapyrusVR
 		void UnregisterForVRButtonEvents(StaticFunctionTag *base, TESForm * thisForm);
 		void RegisterForVROverlapEvents(StaticFunctionTag *base, TESForm * thisForm);
 		void UnregisterForVROverlapEvents(StaticFunctionTag *base, TESForm * thisForm);
+		void RegisterForVRHapticEvents(StaticFunctionTag *base, TESForm * thisForm);
+		void UnregisterForVRHapticEvents(StaticFunctionTag *base, TESForm * thisForm);
 	#pragma endregion
 
 	void TimeSinceLastCall(StaticFunctionTag* base);
@@ -118,8 +120,9 @@ namespace PapyrusVR
 
 	bool RegisterFuncs(VMClassRegistry* registry);
 
-	void OnVRButtonEventRecived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId);
-	void OnVROverlapEventRecived(VROverlapEvent eventType, UInt32 objectHandle, VRDevice deviceId);
+	void OnVRButtonEventReceived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId);
+	void OnVROverlapEventReceived(VROverlapEvent eventType, UInt32 objectHandle, VRDevice deviceId);
+	void OnVRHapticEventReceived(VRDevice device, UInt32 axisID, UInt32 pulseDuration);
 
 	#pragma region API
 
@@ -134,7 +137,7 @@ namespace PapyrusVR
 	#pragma endregion
 	
 	#pragma region Messaging Interface
-	void OnSKSEMessageRecived(SKSEMessagingInterface::Message* message);
+	void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message);
 	void RegisterMessagingInterface(SKSEMessagingInterface* messagingInterface);
 	void RegisterHandle(PluginHandle* handle);
 	#pragma endregion
