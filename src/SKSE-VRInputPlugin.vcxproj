@@ -96,6 +96,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>if not "$(VRInputPluginPath)" == "" (
+  echo Copying to $(VRInputPluginPath)
+  xcopy /Y "$(TargetPath)" "$(VRInputPluginPath) "
+) </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="openvrhooks.h" />
