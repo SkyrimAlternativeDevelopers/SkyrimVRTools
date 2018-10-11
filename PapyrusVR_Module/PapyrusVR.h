@@ -122,25 +122,8 @@ namespace PapyrusVR
 
 	void OnVRButtonEventReceived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId);
 	void OnVROverlapEventReceived(VROverlapEvent eventType, UInt32 objectHandle, VRDevice deviceId);
-	void OnVRHapticEventReceived(VRDevice device, UInt32 axisID, UInt32 pulseDuration);
+	void OnVRHapticEventReceived(UInt32 axisID, UInt32 pulseDuration, VRDevice device);
 
-	#pragma region API
-
-	//Papyrus
-	extern RegistrationSetHolder<TESForm*> g_posesUpdateEventRegs;
-
-	//C++ Plugins
-	typedef std::function<void(float)> OnPoseUpdateCallback;
-	typedef std::list<OnPoseUpdateCallback> PoseUpdateListeners;
-	VRManagerAPI* GetVRManager();
-
-	#pragma endregion
-	
-	#pragma region Messaging Interface
-	void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message);
-	void RegisterMessagingInterface(SKSEMessagingInterface* messagingInterface);
-	void RegisterHandle(PluginHandle* handle);
-	#pragma endregion
 
 	#pragma region Utility Methods
 	//Generic method to handle all pose requests from Papyrus

@@ -44,11 +44,6 @@ namespace PapyrusVR
 	BSFixedString vrHapticEventName("OnVRHapticEvent");
 	RegistrationSetHolder<TESForm*>				g_vrHapticEventRegs;
 
-	//API
-	std::mutex					listenersMutex; 
-	SKSEMessagingInterface*		g_messagingInterface;
-	PluginHandle*				g_pluginHandle;
-	PapyrusVRAPI apiMessage;
 
 	#pragma region Papyrus Events
 		class EventQueueFunctor0 : public IFunctionArguments
@@ -231,12 +226,12 @@ namespace PapyrusVR
 				_MESSAGE("|\t%f\t%f\t%f\t%f\t|", transform->m[0][0], transform->m[0][1], transform->m[0][2], transform->m[0][3]);
 				_MESSAGE("|\t%f\t%f\t%f\t%f\t|", transform->m[1][0], transform->m[1][1], transform->m[1][2], transform->m[1][3]);
 				_MESSAGE("|\t%f\t%f\t%f\t%f\t|", transform->m[2][0], transform->m[2][1], transform->m[2][2], transform->m[2][3]);
-				return GetVRManager()->CreateLocalOverlapSphere(radius, transform, (VRDevice)deviceEnum);
+				return VRManager::GetInstance().CreateLocalOverlapSphere(radius, transform, (VRDevice)deviceEnum);
 			}
 
 			void DestroyLocalOverlapObject(StaticFunctionTag *base, UInt32 objectHandle)
 			{
-				GetVRManager()->DestroyLocalOverlapObject(objectHandle);
+				VRManager::GetInstance().DestroyLocalOverlapObject(objectHandle);
 			}
 		#pragma endregion
 
@@ -250,60 +245,6 @@ namespace PapyrusVR
 			start = end;
 		}
 
-	#pragma endregion
-
-	#pragma region API
-
-		//Returns the VRManager singleton instance
-		VRManagerAPI* GetVRManager()
-		{
-			return &VRManager::GetInstance();
-		}
-	#pragma endregion
-
-	#pragma region Messaging Interface
-
-		// Listens for SKSE events
-		void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message)
-		{
-			if (message)
-			{
-				_MESSAGE("Received SKSE message %d", message->type);
-				if (message->type == SKSEMessagingInterface::kMessage_PostPostLoad)
-				{
-					if (g_messagingInterface && g_pluginHandle)
-					{
-						_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
-						apiMessage.GetVRManager = GetVRManager;
-						//apiMessage.RegisterPoseUpdateListener = GetVRManager()->RegisterVRUpdateListener;
-
-						//Sends pointers to API functions/classes
-						g_messagingInterface->Dispatch(*g_pluginHandle, kPapyrusVR_Message_Init, &apiMessage, sizeof(apiMessage), NULL);
-					}
-				}
-
-				//Ready to Initialize VRManager
-				//if (message->type == SKSEMessagingInterface::kMessage_DataLoaded)
-				//	if(!VRManager::GetInstance().IsInitialized())
-				//		VRManager::GetInstance().Init();
-			}
-		}
-
-		void RegisterMessagingInterface(SKSEMessagingInterface* messagingInterface)
-		{
-			if (messagingInterface && g_pluginHandle)
-			{
-				g_messagingInterface = messagingInterface;
-				_MESSAGE("Registering for plugin loaded message!");
-				g_messagingInterface->RegisterListener(*g_pluginHandle, "SKSE", OnSKSEMessageReceived);
-			}
-		}
-
-		void RegisterHandle(PluginHandle* handle)
-		{
-			if (handle)
-				g_pluginHandle = handle;
-		}
 	#pragma endregion
 
 	#pragma region Utility Methods
