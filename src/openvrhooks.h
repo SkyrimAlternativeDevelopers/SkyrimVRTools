@@ -28,6 +28,12 @@ typedef void * (*VR_GetGenericInterfaceFunc)(const char *pchInterfaceVersion, vr
 
 bool DoOpenVRHook();
 
+bool getControllerStateUpdateShutoff();
+void setControllerStateUpdateShutoff(bool enable);
+
+class FakeVRSystem;
+class FakeVRCompositor;
+
 // OpenVR hook manager
 class OpenVRHookMgr
 {
@@ -39,19 +45,39 @@ public:
 		mVRSystem = vrSystem;
 	}
 
+	void SetFakeVRSystem(FakeVRSystem* vrSystem)
+	{
+		mFakeVRSystem = vrSystem;
+	}
+
 	void SetVRCompositor(vr::IVRCompositor* vrCompositor)
 	{
 		mVRCompositor = vrCompositor;
+	}
+
+	void SetFakeVRCompositor(FakeVRCompositor* vrCompositor)
+	{
+		mFakeVRCompositor = vrCompositor;
 	}
 	
 	vr::IVRSystem* GetVRSystem() const
 	{
 		return mVRSystem;
 	}
+
+	FakeVRSystem* GetFakeVRSystem() const
+	{
+		return mFakeVRSystem;
+	}
 	
 	vr::IVRCompositor* GetVRCompositor() const
 	{
 		return mVRCompositor;
+	}
+
+	FakeVRCompositor* GetFakeVRCompositor() const
+	{
+		return mFakeVRCompositor;
 	}
 
 	bool IsInitialized() const
@@ -72,6 +98,8 @@ public:
 private:
 	vr::IVRSystem* mVRSystem = nullptr;
 	vr::IVRCompositor* mVRCompositor = nullptr;
+	FakeVRSystem* mFakeVRSystem = nullptr;
+	FakeVRCompositor* mFakeVRCompositor = nullptr;
 	bool mInputProcessingReady = false;
 
 	static OpenVRHookMgr* sInstance;

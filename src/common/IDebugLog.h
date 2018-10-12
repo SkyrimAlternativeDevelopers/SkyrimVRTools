@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cstdarg>
-#include <stdio.h>
-#include <ITypes.h>
 
 /**
  *	A simple debug log file

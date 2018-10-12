@@ -1,5 +1,8 @@
 #include "Utilities.h"
+#include <string>
 
+// Disable deprecated warning/error from GetVersionExA
+#pragma warning(disable: 4996)
 
 std::string GetRuntimePath()
 {
@@ -102,7 +105,6 @@ const std::string & GetOSInfoStr()
 
 		info.dwOSVersionInfoSize = sizeof(info);
 
-		/*
 		if(GetVersionEx(&info))
 		{
 			char	buf[256];
@@ -111,7 +113,7 @@ const std::string & GetOSInfoStr()
 
 			result = buf;
 		}
-		else*/
+		else
 		{
 			result = "unknown";
 		}
