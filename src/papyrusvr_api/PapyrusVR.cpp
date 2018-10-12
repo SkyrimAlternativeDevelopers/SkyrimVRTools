@@ -361,7 +361,8 @@ namespace PapyrusVR
 
 	void OnVRButtonEventRecived(VREventType eventType, EVRButtonId buttonId, VRDevice deviceId)
 	{
-		_MESSAGE("Dispatching eventType %d for button with ID: %d from device %d", eventType, buttonId, deviceId);
+		// lfrazer: Reduce log spam for recurring events
+		//_MESSAGE("Dispatching eventType %d for button with ID: %d from device %d", eventType, buttonId, deviceId);
 		//Notify Papyrus scripts
 		if (g_vrButtonEventRegs.m_data.size() > 0)
 			g_vrButtonEventRegs.ForEach(
@@ -371,7 +372,8 @@ namespace PapyrusVR
 
 	void OnVROverlapEventRecived(VROverlapEvent eventType, UInt32 objectHandle, VRDevice deviceId)
 	{
-		_MESSAGE("Dispatching overlap %d for device with ID: %d from handle %d", eventType, deviceId, objectHandle);
+		// lfrazer: Reduce log spam for recurring events
+		//_MESSAGE("Dispatching overlap %d for device with ID: %d from handle %d", eventType, deviceId, objectHandle);
 		//Notify Papyrus scripts
 		if (g_vrButtonEventRegs.m_data.size() > 0)
 			g_vrButtonEventRegs.ForEach(
