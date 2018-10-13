@@ -7,3 +7,5 @@ I may create a new script API that works more efficiently with this method of ge
 Please see https://github.com/artumino/PapyrusVR for Papyrus script details.     
 
 Thanks to the SKSE team at http://skse.silverlock.org/ and artumino for PapyrusVR at https://github.com/artumino/PapyrusVR for making this plugin possible and inspiring me to write it.  
+
+Also a special thanks to Odie (https://github.com/Odie) for contributing Scaleform integration, and in general for his work on SkyUI-VR.  
