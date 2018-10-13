@@ -63,5 +63,8 @@
     <ClInclude Include="DirUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EventHandling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

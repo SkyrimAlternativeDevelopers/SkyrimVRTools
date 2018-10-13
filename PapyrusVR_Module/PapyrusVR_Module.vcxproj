@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirUtils.h" />
+    <ClInclude Include="EventHandling.h" />
     <ClInclude Include="hooks\IHookInterfaceFactory.h" />
     <ClInclude Include="hooks\HookVRCompositor.h" />
     <ClInclude Include="hooks\HookVRSystem.h" />

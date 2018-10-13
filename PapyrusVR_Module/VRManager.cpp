@@ -103,6 +103,7 @@ namespace PapyrusVR
 				}
 			}
 			*/
+			
 
 			//Process Events
 			ProcessControllerEvents(VRDevice::VRDevice_LeftController);
@@ -244,51 +245,6 @@ namespace PapyrusVR
 			if (evt != VROverlapEvent::VROverlapEvent_None)
 				DispatchVROverlapEvent(evt, element.first, currentDevice);
 		}
-	}
-
-	//Notifies all listeners that an event has occured
-	void VRManager::DispatchVRUpdateEvent(float deltaTime)
-	{
-		std::lock_guard<std::mutex> lock(_vrUpdateListenersMutex);
-
-		for (OnVRUpdateEvent& listener : _vrUpdateListeners)
-		{
-			if (listener)
-				(*listener)(deltaTime);
-		}
-	}
-
-	//Notifies all listeners that an event has occured
-	void VRManager::DispatchVRButtonEvent(VREventType eventType, EVRButtonId button, VRDevice device)
-	{
-        std::lock_guard<std::mutex> lock( _vrButtonEventsListenersMutex );
-
-		for (OnVRButtonEvent& listener : _vrButtonEventsListeners)
-		{
-			if (listener)
-				(*listener)(eventType, button, device);
-		}
-	}
-
-	//Notifies all listeners that an overlap has occured
-	void VRManager::DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectHandle, VRDevice device)
-	{
-		//TODO: Filter events?
-		_MESSAGE("[VRManager] Dispatching overlap event %d from device %d in handle %d", eventType, device, objectHandle);
-
-        std::lock_guard<std::mutex> lock( _vrOverlapEventsListenersMutex );
-
-		for (OnVROverlapEvent& listener : _vrOverlapEventsListeners)
-			(*listener)(eventType, objectHandle, device);
-	}
-
-	//Notifies all listeners that an haptic event has occured
-	void VRManager::DispatchVRHapticEvent(UInt32 axisId, UInt32 pulseDuration, VRDevice device)
-	{
-		std::lock_guard<std::mutex> lock(_vrHapticEventsListenersMutex);
-
-		for (OnVRHapticEvent& listener : _vrHapticEventsListeners)
-			(*listener)(axisId, pulseDuration, device);
 	}
 
 	UInt32 VRManager::CreateLocalOverlapSphere(float radius, Matrix34* transform, VRDevice attachedDevice)

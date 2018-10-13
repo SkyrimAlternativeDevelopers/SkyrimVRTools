@@ -145,14 +145,14 @@ namespace PapyrusVR
 		#pragma region Events Management
 			void FormRegisterForEvent(TESForm* object, RegistrationSetHolder<TESForm*>* regHolder)
 			{
-				GenericRegisterForEvent(object, regHolder);
+				GenericPapyrusRegisterForEvent(object, regHolder);
 				if (object && object->formID)
 					_MESSAGE("%d registered", object->formID);
 			}
 
 			void FormUnregisterForEvent(TESForm* object, RegistrationSetHolder<TESForm*>* regHolder)
 			{
-				GenericUnregisterForEvent(object, regHolder);
+				GenericPapyrusUnregisterForEvent(object, regHolder);
 				if (object && object->formID)
 					_MESSAGE("%d unregistered", object->formID);
 			}
