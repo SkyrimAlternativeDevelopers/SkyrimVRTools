@@ -1,32 +1,88 @@
 #include "VRManager.h"
+#include "DirUtils.h"
 
 namespace PapyrusVR
 {
-	void VRManager::Init()
+	void VRManager::InitVRCompositor(vr::IVRCompositor* compositor)
 	{
-		if ((_compositor = vr::VRCompositor()))
-			_MESSAGE("Compositor is reachable, proceding with setup...");
-		else
-			_MESSAGE("Failed to get compositor");
+		_MESSAGE("[VRManager] Setting VRManager compositor to address %p", compositor);
+		if (compositor != nullptr)
+			_compositor = compositor;
+	}
 
-		if ((_vr = vr::VRSystem()))
-			_MESSAGE("VR System is reachable, proceding with setup...");
-		else
-			_MESSAGE("Failed to get VR System");
+	void VRManager::InitVRSystem(vr::IVRSystem* vrSystem)
+	{
+		_MESSAGE("[VRManager] Setting VRManager system to address %p", vrSystem);
+		if (vrSystem != nullptr)
+			_vr = vrSystem;
 	}
           
 	bool VRManager::IsInitialized()
 	{
-		return _compositor && _vr;
+		return _compositor != nullptr && _vr != nullptr;
 	}
 
+	void VRManager::RegisterInputActions()
+	{
+		if (IsInitialized())
+		{
+			_MESSAGE("[VRManager] Registering custom input actions to SteamVR Input");
+
+			//TODO: SteamVR Input
+			//DEBUG CODE
+			/*const char* bindingFileDir = GetCurrentWorkingDir().append("\\Data\\SKSE\\Plugins\\PapyrusVR\\bindings.json").c_str();
+			_MESSAGE("[VRManager] Loading binding file from %s", bindingFileDir);
+			vr::EVRInputError error = vr::VRInput()->SetActionManifestPath(bindingFileDir);
+
+			if (error != vr::EVRInputError::VRInputError_None)
+				_MESSAGE("Error in registering action manifest to SteamVR Input (%d)", error);*/
+
+			//DEBUG CODE, Don't enable you'll lose every controller binding
+			/*vr::VRActionHandle_t test1;
+			vr::VRActionHandle_t test2;
+			vr::VRActionHandle_t test3;
+			vr::VRActionHandle_t test4;
+			vr::VRActionHandle_t test5;
+			vr::VRActionHandle_t test6;
+			vr::VRActionSetHandle_t set_test1;
+			vr::VRActionSetHandle_t set_test2;
+
+			error = vr::VRInput()->GetActionSetHandle("/actions/main/in/OpenInventory", &test1);
+			error = vr::VRInput()->GetActionSetHandle("/actions/driving/in/HonkHorn", &test2);
+			error = vr::VRInput()->GetActionSetHandle("/actions/driving/out/SpeedBump", &test3);
+			error = vr::VRInput()->GetActionSetHandle("/actions/driving/in/Throttle", &test4);
+			error = vr::VRInput()->GetActionSetHandle("/actions/main/in/RightHand", &test5);
+			error = vr::VRInput()->GetActionSetHandle("/actions/main/in/RightHand_Anim", &test6);
+
+			error = vr::VRInput()->GetActionSetHandle("/actions/main", &set_test1);
+			error = vr::VRInput()->GetActionSetHandle("/actions/driving", &set_test2);
+
+			if (error != vr::EVRInputError::VRInputError_None)
+				_MESSAGE("Error in registering actions to SteamVR Input (%d)", error);
+			*/
+			
+		}
+	}
+
+	clock_t lastFrame = clock();
+	clock_t thisFrame;
+	double deltaTime = 0.0f;
 	void VRManager::UpdatePoses()
 	{
 		if (IsInitialized())
 		{
-			vr::VRCompositorError error = _compositor->GetLastPoses((vr::TrackedDevicePose_t*)_renderPoses, vr::k_unMaxTrackedDeviceCount, (vr::TrackedDevicePose_t*)_gamePoses, vr::k_unMaxTrackedDeviceCount);
+			//Calculate deltaTime
+			thisFrame = clock();
+			deltaTime = double(thisFrame - lastFrame) / CLOCKS_PER_SEC;
+			lastFrame = thisFrame;
+
+			//TODO: SteamVR Input
+			//Updates SteamVR Input Actions
+			//vr::VRInput()->UpdateActionState(...);
+
+			vr::VRCompositorError error = _compositor->GetLastPoses((vr::TrackedDevicePose_t*)_renderPoses, k_unMaxTrackedDeviceCount, (vr::TrackedDevicePose_t*)_gamePoses, k_unMaxTrackedDeviceCount);
 			if (error && error != vr::EVRCompositorError::VRCompositorError_None)
-				_MESSAGE("Error while retriving game poses!");
+				_MESSAGE("[VRManager] Error while retriving game poses!");
 
 			//HMD
 			UpdateTrackedDevicesMapEntry(VRDevice::VRDevice_HMD, k_unTrackedDeviceIndex_Hmd);
@@ -47,6 +103,7 @@ namespace PapyrusVR
 				}
 			}
 			*/
+			
 
 			//Process Events
 			ProcessControllerEvents(VRDevice::VRDevice_LeftController);
@@ -55,6 +112,9 @@ namespace PapyrusVR
 			//Process Overlaps for every valid tracked object
 			for (int i = 0; i < VRDevice::VRDevice_LeftController + 1; i++)
 				ProcessOverlapEvents((VRDevice)i);
+
+			//Dispatch update event
+			DispatchVRUpdateEvent(deltaTime);
 		}
 	}
 
@@ -150,6 +210,24 @@ namespace PapyrusVR
 		}
 	}
 
+	void VRManager::ProcessHapticEvents(vr::TrackedDeviceIndex_t unControllerDeviceIndex, uint32_t unAxisId, unsigned short usDurationMicroSec)
+	{
+		if (IsInitialized())
+		{
+			//DEBUG Code
+			vr::TrackedDeviceIndex_t leftHandIndex = _vr->GetTrackedDeviceIndexForControllerRole(vr::ETrackedControllerRole::TrackedControllerRole_LeftHand);
+			vr::TrackedDeviceIndex_t rightHandIndex = _vr->GetTrackedDeviceIndexForControllerRole(vr::ETrackedControllerRole::TrackedControllerRole_RightHand);
+
+			//Finds device (better map the values somewhere instead of checking each time)
+			VRDevice eventDevice =
+				(unControllerDeviceIndex == leftHandIndex) ? VRDevice::VRDevice_LeftController :
+				(unControllerDeviceIndex == rightHandIndex) ? VRDevice::VRDevice_RightController :
+				VRDevice::VRDevice_Unknown;
+
+			DispatchVRHapticEvent(unAxisId, usDurationMicroSec, eventDevice);
+		}
+	}
+
 	void VRManager::ProcessOverlapEvents(VRDevice currentDevice)
 	{
 		// O(_localOverlapObjects.len)
@@ -169,41 +247,17 @@ namespace PapyrusVR
 		}
 	}
 
-	//Notifies all listeners that an event has occured
-	void VRManager::DispatchVRButtonEvent(VREventType eventType, EVRButtonId button, VRDevice device)
-	{
-        std::lock_guard<std::mutex> lock( _vrButtonEventsListenersMutex );
-
-		for (OnVRButtonEvent& listener : _vrButtonEventsListeners)
-		{
-			if (listener)
-				(*listener)(eventType, button, device);
-		}
-	}
-
-	//Notifies all listeners that an overlap has occured
-	void VRManager::DispatchVROverlapEvent(VROverlapEvent eventType, UInt32 objectHandle, VRDevice device)
-	{
-		//TODO: Filter events?
-		_MESSAGE("Dispatching overlap event %d from device %d in handle %d", eventType, device, objectHandle);
-
-        std::lock_guard<std::mutex> lock( _vrOverlapEventsListenersMutex );
-
-		for (OnVROverlapEvent& listener : _vrOverlapEventsListeners)
-			(*listener)(eventType, objectHandle, device);
-	}
-
 	UInt32 VRManager::CreateLocalOverlapSphere(float radius, Matrix34* transform, VRDevice attachedDevice)
 	{
-		_MESSAGE("CreateLocalOverlapSphere");
+		_MESSAGE("[VRManager] CreateLocalOverlapSphere");
 
 		if (!transform)
 			return 0; //handle = 0, ERROR
 
 		Sphere* overlapSphere = new Sphere(radius);
-		_MESSAGE("Radius %f", radius);
-		_MESSAGE("Transform size %d", sizeof(*transform));
-		_MESSAGE("Attached to deviceID %d", attachedDevice);
+		_MESSAGE("[VRManager] Radius %f", radius);
+		_MESSAGE("[VRManager] Transform size %d", sizeof(*transform));
+		_MESSAGE("[VRManager] Attached to deviceID %d", attachedDevice);
 
 		TrackedDevicePose** attachedTo = NULL;
 		if (attachedDevice != VRDevice_Unknown)

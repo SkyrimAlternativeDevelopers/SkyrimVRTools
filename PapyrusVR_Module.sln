@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "papyrusvr", "PapyrusVR_Module\PapyrusVR_Module.vcxproj", "{9D903497-BB27-4C98-801C-E70FDF7E41FA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "papyrusvr_api", "PapyrusVR_Module\api\papyrus_api.vcxproj", "{9D903497-BB27-4C98-801C-E70FDF7E41FB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -17,10 +15,6 @@ Global
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Debug|x64.Build.0 = Debug|x64
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release|x64.ActiveCfg = Release|x64
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release|x64.Build.0 = Release|x64
-		{9D903497-BB27-4C98-801C-E70FDF7E41FB}.Debug|x64.ActiveCfg = Debug|x64
-		{9D903497-BB27-4C98-801C-E70FDF7E41FB}.Debug|x64.Build.0 = Debug|x64
-		{9D903497-BB27-4C98-801C-E70FDF7E41FB}.Release|x64.ActiveCfg = Release|x64
-		{9D903497-BB27-4C98-801C-E70FDF7E41FB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

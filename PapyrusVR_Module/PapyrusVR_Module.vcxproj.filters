@@ -9,6 +9,18 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="hook">
+      <UniqueIdentifier>{92868268-59b1-4f6f-9da7-156dd5081e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api">
+      <UniqueIdentifier>{a1e35c98-c69d-43b2-bcdb-09c07073f95d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api\collisions">
+      <UniqueIdentifier>{966a1e43-6777-4b6b-b5e0-8217cdf1d88d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api\utils">
+      <UniqueIdentifier>{b09e5f53-1dd3-4efc-82d8-89748c93ae8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -19,6 +31,30 @@
     </ClCompile>
     <ClCompile Include="VRManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\openvr_hook.cpp">
+      <Filter>hook</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\HookVRSystem.cpp">
+      <Filter>hook</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\HookVRCompositor.cpp">
+      <Filter>hook</Filter>
+    </ClCompile>
+    <ClCompile Include="DirUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="api\PapyrusVRTypes.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+    <ClCompile Include="api\utils\OpenVRUtils.cpp">
+      <Filter>api\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="api\collisions\LocalOverlapObject.cpp">
+      <Filter>api\collisions</Filter>
+    </ClCompile>
+    <ClCompile Include="api\collisions\Sphere.cpp">
+      <Filter>api\collisions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +68,48 @@
     </ClInclude>
     <ClInclude Include="VRManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\openvr_hook.h">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\HookVRCompositor.h">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\HookVRSystem.h">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\IHookInterfaceFactory.h">
+      <Filter>hook</Filter>
+    </ClInclude>
+    <ClInclude Include="DirUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="api\OpenVRTypes.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="api\PapyrusVRAPI.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="api\PapyrusVRTypes.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="api\VRManagerAPI.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="api\utils\OpenVRUtils.h">
+      <Filter>api\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="api\collisions\IShape.h">
+      <Filter>api\collisions</Filter>
+    </ClInclude>
+    <ClInclude Include="api\collisions\LocalOverlapObject.h">
+      <Filter>api\collisions</Filter>
+    </ClInclude>
+    <ClInclude Include="api\collisions\Sphere.h">
+      <Filter>api\collisions</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

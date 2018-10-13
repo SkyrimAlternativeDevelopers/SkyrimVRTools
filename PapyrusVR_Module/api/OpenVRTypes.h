@@ -22,13 +22,17 @@ specific prior written permission.
 namespace PapyrusVR
 {
 	static const uint32_t k_unTrackedDeviceIndex_Hmd = 0;
-	static const uint32_t k_unMaxTrackedDeviceCount = 16;
+	static const uint32_t k_unMaxTrackedDeviceCount = 64;
+	static const uint32_t k_unTrackedDeviceIndexOther = 0xFFFFFFFE;
+	static const uint32_t k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF;
 
 	enum ETrackingResult //OpenVR
 	{
 		TrackingResult_Uninitialized = 1,
+
 		TrackingResult_Calibrating_InProgress = 100,
 		TrackingResult_Calibrating_OutOfRange = 101,
+
 		TrackingResult_Running_OK = 200,
 		TrackingResult_Running_OutOfRange = 201,
 	};
@@ -67,6 +71,10 @@ namespace PapyrusVR
 		Vector3 vVelocity;				// velocity in tracker space in m/s
 		Vector3 vAngularVelocity;		// angular velocity in radians/s (?)
 		ETrackingResult eTrackingResult;
-		bool bPoseIsValid; bool bDeviceIsConnected;
+		bool bPoseIsValid; 
+
+		// This indicates that there is a device connected for this spot in the pose array.
+		// It could go from true to false if the user unplugs the device.
+		bool bDeviceIsConnected;
 	} TrackedDevicePose;
 }
