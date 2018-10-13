@@ -124,6 +124,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="api\collisions\LocalOverlapObject.cpp" />
+    <ClCompile Include="api\collisions\Sphere.cpp" />
+    <ClCompile Include="api\PapyrusVRTypes.cpp" />
+    <ClCompile Include="api\utils\OpenVRUtils.cpp" />
     <ClCompile Include="DirUtils.cpp" />
     <ClCompile Include="hooks\HookVRCompositor.cpp" />
     <ClCompile Include="hooks\HookVRSystem.cpp" />
@@ -133,6 +137,14 @@
     <ClCompile Include="VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="api\collisions\IShape.h" />
+    <ClInclude Include="api\collisions\LocalOverlapObject.h" />
+    <ClInclude Include="api\collisions\Sphere.h" />
+    <ClInclude Include="api\OpenVRTypes.h" />
+    <ClInclude Include="api\PapyrusVRAPI.h" />
+    <ClInclude Include="api\PapyrusVRTypes.h" />
+    <ClInclude Include="api\utils\OpenVRUtils.h" />
+    <ClInclude Include="api\VRManagerAPI.h" />
     <ClInclude Include="DirUtils.h" />
     <ClInclude Include="EventHandling.h" />
     <ClInclude Include="hooks\IHookInterfaceFactory.h" />
@@ -144,11 +156,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="api\papyrus_api.vcxproj">
-      <Project>{9d903497-bb27-4c98-801c-e70fdf7e41fb}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
