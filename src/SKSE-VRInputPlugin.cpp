@@ -95,4 +95,21 @@ extern "C" {
 		return true;
 	}
 
+	void VRInput_RegisterControllerStateCB(GetControllerState_CB cbfunc)
+	{
+		OpenVRHookMgr::GetInstance()->RegisterControllerStateCB(cbfunc);
+	}
+	void VRInput_RegisterGetPosesCB(WaitGetPoses_CB cbfunc)
+	{
+		OpenVRHookMgr::GetInstance()->RegisterGetPosesCB(cbfunc);
+	}
+	void VRInput_UnregisterControllerStateCB(GetControllerState_CB cbfunc)
+	{
+		OpenVRHookMgr::GetInstance()->UnregisterControllerStateCB(cbfunc);
+	}
+	void VRInput_UnregisterGetPosesCB(WaitGetPoses_CB cbfunc)
+	{
+		OpenVRHookMgr::GetInstance()->UnregisterGetPosesCB(cbfunc);
+	}
+
 };

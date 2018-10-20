@@ -43,6 +43,40 @@ OpenVRHookMgr* OpenVRHookMgr::GetInstance()
 	return sInstance;
 }
 
+
+void OpenVRHookMgr::RegisterControllerStateCB(GetControllerState_CB cbfunc)
+{
+	if (mGetControllerStateCallbacks.find(cbfunc) == mGetControllerStateCallbacks.end())
+	{
+		mGetControllerStateCallbacks.insert(cbfunc);
+	}
+}
+
+void OpenVRHookMgr::RegisterGetPosesCB(WaitGetPoses_CB cbfunc)
+{
+	if (mWaitGetPosesCallbacks.find(cbfunc) == mWaitGetPosesCallbacks.end())
+	{
+		mWaitGetPosesCallbacks.insert(cbfunc);
+	}
+}
+
+void OpenVRHookMgr::UnregisterControllerStateCB(GetControllerState_CB cbfunc)
+{
+	auto it = mGetControllerStateCallbacks.find(cbfunc);
+	if (it != mGetControllerStateCallbacks.end())
+	{
+		mGetControllerStateCallbacks.erase(it);
+	}
+}
+void OpenVRHookMgr::UnregisterGetPosesCB(WaitGetPoses_CB cbfunc)
+{
+	auto it = mWaitGetPosesCallbacks.find(cbfunc);
+	if (it != mWaitGetPosesCallbacks.end())
+	{
+		mWaitGetPosesCallbacks.erase(it);
+	}
+}
+
 static VR_GetGenericInterfaceFunc  VR_GetGenericInterface_RealFunc;
 
 // shim class for IVRSystem 
@@ -417,6 +451,13 @@ public:
 		// Grab the state of the controller
 		bool result = m_system->GetControllerState(unControllerDeviceIndex, &curState, sizeof(vr::VRControllerState_t));
 
+		// call all the registered callbacks
+		for (auto it = OpenVRHookMgr::GetInstance()->mGetControllerStateCallbacks.begin(); it != OpenVRHookMgr::GetInstance()->mGetControllerStateCallbacks.end(); ++it)
+		{
+			GetControllerState_CB cbfunc = *it;
+			cbfunc(unControllerDeviceIndex, pControllerState, unControllerStateSize);
+		}
+
 		// Give the game access to the controller depending on the shutoff flag
 		if (m_getControllerStateShutoff == false) {
 			memcpy(pControllerState, &curState, sizeof(vr::VRControllerState_t));
@@ -605,6 +646,13 @@ public:
 		// causing crash?
 		if (OpenVRHookMgr::GetInstance()->IsInputProcessingReady())
 		{
+			// call all the registered callbacks
+			for (auto it = OpenVRHookMgr::GetInstance()->mWaitGetPosesCallbacks.begin(); it != OpenVRHookMgr::GetInstance()->mWaitGetPosesCallbacks.end(); ++it)
+			{
+				WaitGetPoses_CB cbfunc = *it;
+				cbfunc(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount);
+			}
+
 			PapyrusVR::OnVRUpdate(); // PapyrusVR integration Update event - PapyrusVR code implies this should be called from the render thread, but i am not sure if this is the case here.  
 		}
 

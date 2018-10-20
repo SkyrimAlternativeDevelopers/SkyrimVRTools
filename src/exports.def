@@ -2,3 +2,7 @@ LIBRARY	"SKSE-VRInputPlugin"
 EXPORTS
 SKSEPlugin_Query
 SKSEPlugin_Load
+VRInput_RegisterControllerStateCB
+VRInput_RegisterGetPosesCB
+VRInput_UnregisterControllerStateCB
+VRInput_UnregisterGetPosesCB

@@ -21,6 +21,7 @@
 
 #include <windows.h>
 #include <inttypes.h>
+#include <unordered_set>
 #include "openvr.h"
 
 typedef void * (*VR_GetGenericInterfaceFunc)(const char *pchInterfaceVersion, vr::EVRInitError *peError);
@@ -31,12 +32,24 @@ bool DoOpenVRHook();
 bool getControllerStateUpdateShutoff();
 void setControllerStateUpdateShutoff(bool enable);
 
+// VR input callbacks
+typedef bool (*GetControllerState_CB)(vr::TrackedDeviceIndex_t unControllerDeviceIndex, vr::VRControllerState_t *pControllerState, uint32_t unControllerStateSize);
+typedef vr::EVRCompositorError (*WaitGetPoses_CB)(VR_ARRAY_COUNT(unRenderPoseArrayCount) vr::TrackedDevicePose_t* pRenderPoseArray, uint32_t unRenderPoseArrayCount,
+	VR_ARRAY_COUNT(unGamePoseArrayCount) vr::TrackedDevicePose_t* pGamePoseArray, uint32_t unGamePoseArrayCount);
+
+
+
+
 class FakeVRSystem;
 class FakeVRCompositor;
+
 
 // OpenVR hook manager
 class OpenVRHookMgr
 {
+	friend class FakeVRSystem;
+	friend class FakeVRCompositor;
+
 public:
 	static OpenVRHookMgr* GetInstance();
 
@@ -94,6 +107,11 @@ public:
 	{
 		mInputProcessingReady = readyflag;
 	}
+
+	void RegisterControllerStateCB(GetControllerState_CB cbfunc);
+	void RegisterGetPosesCB(WaitGetPoses_CB cbfunc);
+	void UnregisterControllerStateCB(GetControllerState_CB cbfunc);
+	void UnregisterGetPosesCB(WaitGetPoses_CB cbfunc);
 	
 private:
 	vr::IVRSystem* mVRSystem = nullptr;
@@ -101,6 +119,9 @@ private:
 	FakeVRSystem* mFakeVRSystem = nullptr;
 	FakeVRCompositor* mFakeVRCompositor = nullptr;
 	bool mInputProcessingReady = false;
+
+	std::unordered_set<GetControllerState_CB> mGetControllerStateCallbacks;
+	std::unordered_set<WaitGetPoses_CB>	mWaitGetPosesCallbacks;
 
 	static OpenVRHookMgr* sInstance;
 };
