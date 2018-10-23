@@ -1,4 +1,5 @@
 #include "OpenVRUtils.h"
+#include "GameSettings.h"
 
 namespace PapyrusVR
 {
@@ -181,7 +182,8 @@ namespace PapyrusVR
 		}
 	#pragma endregion
 
-	//Conversions
+	#pragma region Conversions
+
 	void OpenVRUtils::CopyQuaternionToVMArray(Quaternion* quaternion, VMArray<float>* arr)
 	{
 		float value;
@@ -244,61 +246,72 @@ namespace PapyrusVR
 		}
 	}
 
+	void OpenVRUtils::CopyMatrix34ToNiTrasform(Matrix34* matrix, NiTransform* transform)
+	{
+		//Position
+		transform->pos.x = matrix->m[0][3];
+		transform->pos.y = matrix->m[1][3];
+		transform->pos.z = matrix->m[2][3];
+
+		//Rotation
+		transform->rot.data[0][0] = matrix->m[0][0];
+		transform->rot.data[0][1] = matrix->m[0][1];
+		transform->rot.data[0][2] = matrix->m[0][2];
+
+		transform->rot.data[1][0] = matrix->m[1][0];
+		transform->rot.data[1][1] = matrix->m[1][1];
+		transform->rot.data[1][2] = matrix->m[1][2];
+
+		transform->rot.data[2][0] = matrix->m[2][0];
+		transform->rot.data[2][1] = matrix->m[2][1];
+		transform->rot.data[2][2] = matrix->m[2][2];
+	}
+
+	void OpenVRUtils::CopyNiTrasformToMatrix34(NiTransform* transform, Matrix34* matrix)
+	{
+		//Position
+		matrix->m[0][3] = transform->pos.x;
+		matrix->m[1][3] = transform->pos.y;
+		matrix->m[2][3] = transform->pos.z;
+
+		//Rotation
+		matrix->m[0][0] = transform->rot.data[0][0];
+		matrix->m[0][1] = transform->rot.data[0][1];
+		matrix->m[0][2] = transform->rot.data[0][2];
+
+		matrix->m[1][0] = transform->rot.data[1][0];
+		matrix->m[1][1] = transform->rot.data[1][1];
+		matrix->m[1][2] = transform->rot.data[1][2];
+
+		matrix->m[2][0] = transform->rot.data[2][0];
+		matrix->m[2][1] = transform->rot.data[2][1];
+		matrix->m[2][2] = transform->rot.data[2][2];
+	}
+
+	#pragma endregion
+
+	#pragma region Coordinate Transforms
+
 	void OpenVRUtils::SkyrimTransformToSteamVRTransform(Matrix34* matrix)
 	{
 		Vector3 position = OpenVRUtils::GetPosition(matrix);
 		Matrix33 rotation = Matrix33FromTransform(matrix);
 
-		Matrix33 SkyrimRotation = TConversionMatrix * rotation * ConversionMatrix;
+		Matrix33 SkyrimRotation = TConversionMatrix * (rotation * ConversionMatrix);
 		*matrix = Matrix34FromRotation(&SkyrimRotation);
 
 		float temp = position.y;
 		matrix->m[0][3] = position.x * OpenVRUtils::SkyrimUnitsToMetersFactor;
 		matrix->m[1][3] = position.z * OpenVRUtils::SkyrimUnitsToMetersFactor;
 		matrix->m[2][3] = -temp * OpenVRUtils::SkyrimUnitsToMetersFactor;
-		/*Vector3 temp;
-
-		//Swaps collumns
-		temp.x = matrix->m[0][1];
-		temp.y = -matrix->m[1][1];
-		temp.z = -matrix->m[2][1];
-
-		matrix->m[0][1] = matrix->m[0][2];
-		matrix->m[1][1] = -matrix->m[1][2];
-		matrix->m[2][1] = matrix->m[2][2];
-
-		matrix->m[0][2] = temp.x;
-		matrix->m[1][2] = temp.y;
-		matrix->m[2][2] = temp.z;
-
-		//Spaws rows
-		temp.x = matrix->m[1][0];
-		temp.y = matrix->m[1][1];
-		temp.z = -matrix->m[1][2];
-
-		matrix->m[1][0] = matrix->m[2][0];
-		matrix->m[1][1] = -matrix->m[2][1];
-		matrix->m[1][2] = matrix->m[2][2];
-
-		matrix->m[2][0] = temp.x;
-		matrix->m[2][1] = temp.y;
-		matrix->m[2][2] = temp.z;
-
-		//Swaps YZ in Traslation Vector (and adjusts Z sign)
-		temp.y = matrix->m[1][3] * OpenVRUtils::SkyrimUnitsToMetersFactor;
-		matrix->m[1][3] = matrix->m[2][3] * OpenVRUtils::SkyrimUnitsToMetersFactor;
-		matrix->m[2][3] = -temp.y; //Invert sign
-
-		//Converts remaining parameters
-		matrix->m[0][3] *= OpenVRUtils::SkyrimUnitsToMetersFactor;*/
 	}
 
 	void OpenVRUtils::SteamVRTransformToSkyrimTransform(Matrix34* matrix)
 	{
 		Vector3 position = OpenVRUtils::GetPosition(matrix);
 		Matrix33 rotation = Matrix33FromTransform(matrix);
-		
-		Matrix33 SkyrimRotation = ConversionMatrix * rotation * TConversionMatrix;
+
+		Matrix33 SkyrimRotation = ConversionMatrix * (rotation * TConversionMatrix);
 		*matrix = Matrix34FromRotation(&SkyrimRotation);
 
 		float temp = position.y;
@@ -307,10 +320,25 @@ namespace PapyrusVR
 		matrix->m[2][3] = temp * OpenVRUtils::MetersToSkyrimUnitsFactor;
 	}
 
+	#pragma endregion
 
 	void OpenVRUtils::SetVRGameScale(float VRWorldScale)
 	{
 		OpenVRUtils::MetersToSkyrimUnitsFactor = VRWorldScale;
 		OpenVRUtils::SkyrimUnitsToMetersFactor = 1 / VRWorldScale;
+	}
+
+	void OpenVRUtils::SetupConversion()
+	{
+		_MESSAGE("[OpenVRUtils] Game Loaded, getting VR Scale");
+		//Set VR Scale
+		double vrScale = 75.0;
+		Setting * setting = GetINISetting("fVrScale:VR");
+		if (!setting || setting->GetType() != Setting::kType_Float)
+			_MESSAGE("[OpenVRUtils] Failed to get vr scale from INI, defaulting back to 75");
+		else
+			vrScale = setting->data.f32;
+		_MESSAGE("[OpenVRUtils] Loaded vrScale with value %f", vrScale);
+		PapyrusVR::OpenVRUtils::SetVRGameScale(vrScale);
 	}
 }

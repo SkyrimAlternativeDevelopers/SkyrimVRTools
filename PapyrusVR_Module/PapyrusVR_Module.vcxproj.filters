@@ -56,6 +56,9 @@
     <ClCompile Include="api\collisions\Sphere.cpp">
       <Filter>api\collisions</Filter>
     </ClCompile>
+    <ClCompile Include="kinematrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def">
@@ -110,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="api\collisions\Sphere.h">
       <Filter>api\collisions</Filter>
+    </ClInclude>
+    <ClInclude Include="kinematrix.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -132,6 +132,7 @@
     <ClCompile Include="hooks\HookVRCompositor.cpp" />
     <ClCompile Include="hooks\HookVRSystem.cpp" />
     <ClCompile Include="hooks\openvr_hook.cpp" />
+    <ClCompile Include="kinematrix.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PapyrusVR.cpp" />
     <ClCompile Include="VRManager.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="hooks\HookVRCompositor.h" />
     <ClInclude Include="hooks\HookVRSystem.h" />
     <ClInclude Include="hooks\openvr_hook.h" />
+    <ClInclude Include="kinematrix.h" />
     <ClInclude Include="PapyrusVR.h" />
     <ClInclude Include="VRManager.h" />
   </ItemGroup>

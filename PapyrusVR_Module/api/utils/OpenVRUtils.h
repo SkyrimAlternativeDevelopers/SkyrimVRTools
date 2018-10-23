@@ -1,6 +1,8 @@
 #pragma once
 #include "../PapyrusVRTypes.h"
-#include "skse64/PapyrusNativeFunctions.h"
+#include "NiTypes.h"
+#include "NiObjects.h"
+#include "PapyrusNativeFunctions.h"
 
 namespace PapyrusVR
 {
@@ -33,6 +35,10 @@ namespace PapyrusVR
 		static void CopyVector3ToVMArray(Vector3* vector, VMArray<float>* arr);
 		static void CopyVMArrayToQuaternion(VMArray<float>* arr, Quaternion* quaternion);
 		static void CopyVMArrayToVector3(VMArray<float>* arr, Vector3* vector);
+		static void CopyMatrix34ToNiTrasform(Matrix34* matrix, NiTransform* transform);
+		static void CopyNiTrasformToMatrix34(NiTransform* transform, Matrix34* matrix);
+
+		//Coordinate Tranforms
 		static void SkyrimTransformToSteamVRTransform(Matrix34* matrix);
 		static void SteamVRTransformToSkyrimTransform(Matrix34* matrix);
 
@@ -42,5 +48,6 @@ namespace PapyrusVR
 
 		//Game Variables
 		static void SetVRGameScale(float VRWorldScale);
+		static void SetupConversion();
 	};
 }

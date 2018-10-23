@@ -25,8 +25,8 @@ namespace PapyrusVR
         };
 	} Vector3;
 
-	Vector3& operator-(Vector3 const& lhs, Vector3 const& rhs);
-	Vector3& operator+(Vector3 const& lhs, Vector3 const& rhs);
+	Vector3 operator-(Vector3 const& lhs, Vector3 const& rhs);
+	Vector3 operator+(Vector3 const& lhs, Vector3 const& rhs);
 
 	typedef struct Quaternion
 	{
@@ -59,8 +59,9 @@ namespace PapyrusVR
 			m[1][2] = x12;
 			m[2][2] = x22;
 		}
+
+		Matrix33 operator*(Matrix33 const& rhs) const;
 	} Matrix33;
-	Matrix33& operator*(Matrix33 const& lhs, Matrix33 const& rhs);
 
 	typedef struct Matrix34
 	{
@@ -89,17 +90,17 @@ namespace PapyrusVR
 			m[2][3] = x23;
 		}
 
-		Matrix34& operator+(Matrix34 const& rhs);
-		Matrix34& operator-(Matrix34 const& rhs);
+		Matrix34 operator+(Matrix34 const& rhs);
+		Matrix34 operator-(Matrix34 const& rhs);
 
 	} Matrix34;
-	Matrix34& operator+(Matrix34 const& lhs, Matrix34 const& rhs);
-	Matrix34& operator-(Matrix34 const& lhs, Matrix34 const& rhs);
-	Vector3& operator*(Matrix34 const& lhs, Vector3 const& rhs);
+	Matrix34 operator+(Matrix34 const& lhs, Matrix34 const& rhs);
+	Matrix34 operator-(Matrix34 const& lhs, Matrix34 const& rhs);
+	Vector3 operator*(Matrix34 const& lhs, Vector3 const& rhs);
 
 
-	Matrix33& Matrix33FromTransform(Matrix34 const* matrix);
-	Matrix34& Matrix34FromRotation(Matrix33 const* matrix);
+	Matrix33 Matrix33FromTransform(Matrix34 const* matrix);
+	Matrix34 Matrix34FromRotation(Matrix33 const* matrix);
 
 	typedef struct Matrix44
 	{
