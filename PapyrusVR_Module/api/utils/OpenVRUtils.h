@@ -1,8 +1,8 @@
 #pragma once
 #include "../PapyrusVRTypes.h"
-#include "NiTypes.h"
-#include "NiObjects.h"
-#include "PapyrusNativeFunctions.h"
+#include "skse64/NiTypes.h"
+#include "skse64/NiObjects.h"
+#include "skse64/PapyrusNativeFunctions.h"
 
 namespace PapyrusVR
 {

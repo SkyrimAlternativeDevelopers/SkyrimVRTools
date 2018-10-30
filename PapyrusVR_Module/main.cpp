@@ -59,9 +59,7 @@ void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message)
 		if (message->type == SKSEMessagingInterface::kMessage_PostLoadGame)
 		{
 			//Get player nodes, etc.
-			
 			PapyrusVR::OpenVRUtils::SetupConversion();
-			Kinematrix::GameLoaded();
 		}
 	}
 }
