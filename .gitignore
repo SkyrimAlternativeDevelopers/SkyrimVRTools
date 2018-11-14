@@ -1,0 +1,17 @@
+﻿################################################################################
+# Il file gitignore è stato creato automaticamente da Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/PapyrusVR_Module/v15
+/PapyrusVR_Module/.vs/PapyrusVR_Module/v15
+/PapyrusVR_Module/x64/Debug
+/x64/Debug
+/PapyrusVR_Module/libs
+/PapyrusVR_Module/x64/Release
+/x64/Release
+/.vs
+/PapyrusVR_Module/api/x64/Release
+*.db
+*.opendb
+/PapyrusVR_Module/api/x64/Debug
+/papyrusvr_test/x64
