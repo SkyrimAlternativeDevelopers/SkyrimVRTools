@@ -10,6 +10,7 @@
 #include "api/collisions/IShape.h"
 #include "api/collisions/Sphere.h"
 
+//TODO: Implement OpenVRHook getters, setters and callbacks
 namespace PapyrusVR
 {
 	//Singleton to manage OpenVR calls (cache poses etc.)

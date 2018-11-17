@@ -1,16 +1,21 @@
 #include "HookVRCompositor.h"
+#include "openvr_hooks.h"
 #include "../VRManager.h"
 
 using namespace vr;
 using namespace PapyrusVR;
+
+#pragma region Factory Methods
 
 void* HookVRCompositorFactory::Build(void * realInterface)
 {
 	if (realInterface != nullptr)
 	{
 		_MESSAGE("[OpenVR_Hook] Hooked IVRCompositor");
-		VRManager::GetInstance().InitVRCompositor((vr::IVRCompositor*)realInterface);
-		return (void*)(new HookVRCompositor((vr::IVRCompositor*)realInterface));
+		VRManager::GetInstance().InitVRCompositor((IVRCompositor*)realInterface);
+		OpenVRHookMgr::GetInstance()->SetVRCompositor((IVRCompositor*)realInterface);
+		OpenVRHookMgr::GetInstance()->SetFakeVRCompositor(new HookVRCompositor((vr::IVRCompositor*)realInterface));
+		return (void*)(OpenVRHookMgr::GetInstance()->GetFakeVRCompositor());
 	}
 	return nullptr;
 }
@@ -20,8 +25,33 @@ std::string HookVRCompositorFactory::GetWrappedVersion()
 	return std::string(SkyrimVR_IVRCompositor_Version);
 }
 
+#pragma endregion
+
+#pragma region Hooked Methods
+
 HookVRCompositor::HookVRCompositor(vr::IVRCompositor* wrappedCompositor) : vr_compositor(wrappedCompositor) { }
 
+EVRCompositorError HookVRCompositor::WaitGetPoses(VR_ARRAY_COUNT(unRenderPoseArrayCount)TrackedDevicePose_t * pRenderPoseArray, uint32_t unRenderPoseArrayCount, 
+													VR_ARRAY_COUNT(unGamePoseArrayCount)TrackedDevicePose_t * pGamePoseArray, uint32_t unGamePoseArrayCount)
+{
+	EVRCompositorError result = vr_compositor->WaitGetPoses(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount);
+
+
+	//Calls the VRManager for Internal Processing
+	VRManager::GetInstance().UpdatePoses();
+
+	// call all the registered callbacks for raw OpenVR events
+	for (auto it = OpenVRHookMgr::GetInstance()->mWaitGetPosesCallbacks.begin(); it != OpenVRHookMgr::GetInstance()->mWaitGetPosesCallbacks.end(); ++it)
+	{
+		WaitGetPoses_CB cbfunc = *it;
+		cbfunc(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount);
+	}
+
+	return result;
+}
+#pragma endregion
+
+#pragma region Interface Dummy Implementations
 void HookVRCompositor::SetTrackingSpace(ETrackingUniverseOrigin eOrigin)
 {
 	vr_compositor->SetTrackingSpace(eOrigin);
@@ -30,16 +60,6 @@ void HookVRCompositor::SetTrackingSpace(ETrackingUniverseOrigin eOrigin)
 ETrackingUniverseOrigin HookVRCompositor::GetTrackingSpace()
 {
 	return vr_compositor->GetTrackingSpace();
-}
-
-EVRCompositorError HookVRCompositor::WaitGetPoses(VR_ARRAY_COUNT(unRenderPoseArrayCount)TrackedDevicePose_t * pRenderPoseArray, uint32_t unRenderPoseArrayCount, VR_ARRAY_COUNT(unGamePoseArrayCount)TrackedDevicePose_t * pGamePoseArray, uint32_t unGamePoseArrayCount)
-{
-	EVRCompositorError result = vr_compositor->WaitGetPoses(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount);
-	
-	//Calls the VRManager
-	VRManager::GetInstance().UpdatePoses();
-
-	return result;
 }
 
 EVRCompositorError HookVRCompositor::GetLastPoses(VR_ARRAY_COUNT(unRenderPoseArrayCount)TrackedDevicePose_t * pRenderPoseArray, uint32_t unRenderPoseArrayCount, VR_ARRAY_COUNT(unGamePoseArrayCount)TrackedDevicePose_t * pGamePoseArray, uint32_t unGamePoseArrayCount)
@@ -241,3 +261,5 @@ EVRCompositorError HookVRCompositor::SubmitExplicitTimingData()
 {
 	return vr_compositor->SubmitExplicitTimingData();
 }
+
+#pragma endregion
