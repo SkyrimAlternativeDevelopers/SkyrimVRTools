@@ -1,4 +1,4 @@
-LIBRARY	"papyrusvr"
+LIBRARY	"skyrimvrtools"
 EXPORTS
 SKSEPlugin_Query
 SKSEPlugin_Load

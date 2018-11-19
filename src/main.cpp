@@ -4,15 +4,17 @@
 #include <shlobj.h>				// CSIDL_MYCODUMENTS
 
 #include "PapyrusVR.h"
+#include "ScaleformVR.h"
 #include "VRManager.h"
 #include "api/VRManagerAPI.h"
+#include "api/VRHookAPI.h"
 #include "hooks/openvr_hook.h"
 #include "api/utils/OpenVRUtils.h"
-#include "kinematrix.h"
 
 static PluginHandle					g_pluginHandle = kPluginHandle_Invalid;
 static SKSEPapyrusInterface         * g_papyrus = NULL;
-static SKSEMessagingInterface*		g_messagingInterface;
+static SKSEScaleformInterface       * g_scaleform = NULL;
+static SKSEMessagingInterface		* g_messagingInterface = NULL;
 
 //API
 static PapyrusVRAPI apiMessage;
@@ -26,6 +28,12 @@ static PapyrusVRAPI apiMessage;
 PapyrusVR::VRManagerAPI* GetVRManager()
 {
 	return &PapyrusVR::VRManager::GetInstance();
+}
+
+//Returns the OpenVRHookMgr singleton instance
+OpenVRHookManagerAPI* GetVRHookManager()
+{
+	return OpenVRHookMgr::GetInstance();
 }
 #pragma endregion
 
@@ -43,6 +51,7 @@ void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message)
 			{
 				_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
 				apiMessage.GetVRManager = GetVRManager;
+				apiMessage.GetOpenVRHook
 				//apiMessage.RegisterPoseUpdateListener = GetVRManager()->RegisterVRUpdateListener;
 
 				//Sends pointers to API functions/classes
@@ -71,18 +80,18 @@ extern "C"
 {
 	
 	bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info) {	// Called by SKSE to learn about this plugin and check that it's safe to load it
-		gLog.OpenRelative(CSIDL_MYDOCUMENTS, "\\My Games\\Skyrim VR\\SKSE\\PapyrusVR.log");
+		gLog.OpenRelative(CSIDL_MYDOCUMENTS, "\\My Games\\Skyrim VR\\SKSE\\SkyrimVRTools.log");
 		gLog.SetPrintLevel(IDebugLog::kLevel_Error);
 		gLog.SetLogLevel(IDebugLog::kLevel_DebugMessage);
 
 		//Test for enabling /GS security checks
 		__security_init_cookie();
 
-		_MESSAGE("PapyrusVR");
+		_MESSAGE("SkyrimVRTools");
 
 		// populate info structure
 		info->infoVersion = PluginInfo::kInfoVersion;
-		info->name = "PapyrusVR";
+		info->name = "SkyrimVRTools";
 		info->version = 1;
 
 		// store plugin handle so we can identify ourselves later
@@ -116,10 +125,12 @@ extern "C"
 		return true;
 	}
 
+	//TODO: Create proper namespaces for everything
 	bool SKSEPlugin_Load(const SKSEInterface * skse) {	// Called by SKSE to load this plugin
-		_MESSAGE("PapyrusVR loaded");
+		_MESSAGE("SkyrimVRTools loaded");
 
 		g_papyrus = (SKSEPapyrusInterface *)skse->QueryInterface(kInterface_Papyrus);
+		g_scaleform = (SKSEScaleformInterface *)skse->QueryInterface(kInterface_Scaleform);
 
 		//Updates pointer
 		_MESSAGE("Current register plugin function at memory address: %p", PapyrusVR::RegisterForPoseUpdates);
@@ -127,15 +138,22 @@ extern "C"
 		//Debug
 		//__debugbreak();
 
-		//Check if the function registration was a success...
+		//Papyrus
 		_MESSAGE("Registering Papyrus native functions...");
 		bool btest = g_papyrus->Register(PapyrusVR::RegisterFuncs);
 		if (btest) {
 			_MESSAGE("Papyrus Functions Register Succeeded");
 		}
 
+		//Scaleform
+		btest &= g_scaleform->Register("vrinput", ScaleformVR::RegisterFuncs);
+		if (btest) {
+			_MESSAGE("Scaleform Functions Register Succeeded");
+		}
+
+		//OpenVR Hook
 		_MESSAGE("Hooking into OpenVR calls");
-		if (!DoHook())
+		if (!DoOpenVRHook())
 		{
 			_MESSAGE("Failed to hook to OpenVR...");
 			btest = false;

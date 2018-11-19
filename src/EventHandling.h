@@ -7,6 +7,7 @@
 	Defines commonly used Event Handling templates
 */
 
+//TODO: Merge scaleform events too?
 #pragma region C++ Events
 
 //Registers a Plugin to a listeners pool for a generic event
