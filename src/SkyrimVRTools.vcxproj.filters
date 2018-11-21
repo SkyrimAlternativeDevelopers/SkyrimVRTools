@@ -29,6 +29,9 @@
     <ClCompile Include="PapyrusVR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ScaleformVR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="VRManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,6 +69,9 @@
     <ClInclude Include="PapyrusVR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScaleformVR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="VRManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -97,6 +103,9 @@
       <Filter>api</Filter>
     </ClInclude>
     <ClInclude Include="api\VRManagerAPI.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="api\VRHookAPI.h">
       <Filter>api</Filter>
     </ClInclude>
     <ClInclude Include="api\utils\OpenVRUtils.h">
