@@ -46,6 +46,8 @@ void setControllerStateUpdateShutoff(bool enable);
 */
 class OpenVRHookMgr : OpenVRHookManagerAPI
 {
+friend class HookVRSystem;
+friend class HookVRCompositor;
 
 public:
 	static OpenVRHookMgr* GetInstance();
@@ -55,7 +57,7 @@ public:
 		mVRSystem = vrSystem;
 	}
 
-	void SetFakeVRSystem(FakeVRSystem* vrSystem)
+	void SetFakeVRSystem(HookVRSystem* vrSystem)
 	{
 		mFakeVRSystem = vrSystem;
 	}
@@ -65,7 +67,7 @@ public:
 		mVRCompositor = vrCompositor;
 	}
 
-	void SetFakeVRCompositor(FakeVRCompositor* vrCompositor)
+	void SetFakeVRCompositor(HookVRCompositor* vrCompositor)
 	{
 		mFakeVRCompositor = vrCompositor;
 	}
@@ -90,11 +92,7 @@ public:
 		return mFakeVRCompositor;
 	}
 
-	bool IsInitialized() const
-	{
-		return mVRCompositor != nullptr && mVRSystem != nullptr;
-	}
-
+	bool IsInitialized();
 	void RegisterControllerStateCB(GetControllerState_CB cbfunc);
 	void RegisterGetPosesCB(WaitGetPoses_CB cbfunc);
 	void UnregisterControllerStateCB(GetControllerState_CB cbfunc);

@@ -1,5 +1,5 @@
 #include "OpenVRUtils.h"
-#include "GameSettings.h"
+#include "skse64/GameSettings.h"
 
 namespace PapyrusVR
 {

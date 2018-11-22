@@ -34,12 +34,16 @@ OpenVRHookMgr* OpenVRHookMgr::GetInstance()
 {
 	if (sInstance == nullptr)
 	{
-		sInstance = new OpenVRHookMgr;
+		sInstance = new OpenVRHookMgr();
 	}
 
 	return sInstance;
 }
 
+bool OpenVRHookMgr::IsInitialized()
+{
+	return mVRCompositor != nullptr && mVRSystem != nullptr;
+}
 
 void OpenVRHookMgr::RegisterControllerStateCB(GetControllerState_CB cbfunc)
 {
@@ -109,7 +113,7 @@ bool DoOpenVRHook()
 	// Get address of the original VR_GetGenericInterface in the openvr DLL Skyrim uses
 	uintptr_t thunkAddress = (uintptr_t)GetIATAddr((UInt8 *)GetModuleHandle(NULL), "openvr_api.dll", "VR_GetGenericInterface");
 
-	if (thunkAddress == nullptr)
+	if (thunkAddress == 0)
 	{
 		_MESSAGE("Failed to find address of VR_GetGenericInterface()\n");
 		return false;

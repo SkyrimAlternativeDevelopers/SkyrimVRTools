@@ -5,7 +5,7 @@
 #include "skse64/Hooks_Scaleform.h"
 #include "skse64/ScaleformCallbacks.h"
 #include <list>
-#include "openvrhooks.h"
+#include "hooks/openvr_hook.h"
 
 namespace ScaleformVR
 {

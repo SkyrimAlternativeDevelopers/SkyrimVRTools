@@ -1,5 +1,5 @@
 #include "HookVRCompositor.h"
-#include "openvr_hooks.h"
+#include "openvr_hook.h"
 #include "../VRManager.h"
 
 using namespace vr;

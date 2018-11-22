@@ -1,6 +1,7 @@
 #include "HookVRSystem.h"
 #include "../VRManager.h"
 #include "../ScaleformVR.h"
+#include "openvr_hook.h"
 
 using namespace vr;
 using namespace PapyrusVR;
@@ -77,7 +78,7 @@ bool HookVRSystem::GetControllerState(vr::TrackedDeviceIndex_t unControllerDevic
 		for (auto it = OpenVRHookMgr::GetInstance()->mGetControllerStateCallbacks.begin(); it != OpenVRHookMgr::GetInstance()->mGetControllerStateCallbacks.end(); ++it)
 		{
 			GetControllerState_CB cbfunc = *it;
-			cbfunc(unControllerDeviceIndex, curState, unControllerStateSize);
+			cbfunc(unControllerDeviceIndex, &curState, unControllerStateSize);
 		}
 	}
 

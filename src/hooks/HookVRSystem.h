@@ -63,7 +63,7 @@ public:
 	*	will come from a vsync timer event in the timer if possible or from the application-reported
 	*   time if that is not available. If no vsync times are available the function will
 	*   return zero for vsync time and frame counter and return false from the method. */
-	virtual bool GetTimeSinceLastVsync(float *pfSecondsSinceLastVsync, uint64_t *pulFrameCounter)bool HookVRSystem::GetTimeSinceLastVsync(float *pfSecondsSinceLastVsync, uint64_t *pulFrameCounter)
+	virtual bool GetTimeSinceLastVsync(float *pfSecondsSinceLastVsync, uint64_t *pulFrameCounter)
 	{
 		return vr_system->GetTimeSinceLastVsync(pfSecondsSinceLastVsync, pulFrameCounter);
 	}

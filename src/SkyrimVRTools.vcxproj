@@ -59,12 +59,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;PLUGIN_EXAMPLE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\..;$(SolutionDir)\..\..;$(SolutionDir)\..\openvr;$(SolutionDir)\..\skse;;$(SolutionDir)\..\skse\sksevr;$(SolutionDir)\..\skse\sksevr\skse64;$(SolutionDir)\..\..\openvr;$(SolutionDir)\..\..\skse;$(SolutionDir)\..\..\skse\sksevr;$(SolutionDir)\..\..\skse\sksevr\skse64;$(SolutionDir)\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SKSEVRPath);$(SKSEVRPath)\skse;$(OpenVRPath);$(SolutionDir)\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>false</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <ForcedIncludeFiles>common/IPrefix.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <LanguageStandard>stdcpp14</LanguageStandard>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
@@ -72,12 +72,12 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>shlwapi.lib;libs/*.lib;libs/Debug/*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;libs/*.lib;libs/Debug/*.lib;$(SKSEVRPath)\skse\x64\Debug-StaticLib\*.lib;$(SKSEVRPath)\skse\x64_v141\Debug-StaticLib\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>if not "$(Skyrim64Path)" == "" (
-  echo Copying to $(Skyrim64Path)\Data\SKSE\Plugins
-  xcopy /Y "$(TargetPath)" "$(Skyrim64Path)\Data\SKSE\Plugins "
+      <Command>if not "$(SkyrimVRPath)" == "" (
+  echo Copying to $(SkyrimVRPath)\Data\SKSE\Plugins
+  xcopy /Y "$(TargetPath)" "$(SkyrimVRPath)\Data\SKSE\Plugins "
 ) </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -91,7 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;PLUGIN_EXAMPLE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)\..;$(SolutionDir)\..\..;$(SolutionDir)\..\openvr;$(SolutionDir)\..\skse;$(SolutionDir)\..\skse\sksevr;$(SolutionDir)\..\skse\sksevr\skse64;$(SolutionDir)\..\..\openvr;$(SolutionDir)\..\..\skse;$(SolutionDir)\..\..\skse\sksevr;$(SolutionDir)\..\..\skse\sksevr\skse64;$(SolutionDir)\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SKSEVRPath);$(SKSEVRPath)\skse;$(OpenVRPath);$(SolutionDir)\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ForcedIncludeFiles>common/IPrefix.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -104,12 +104,12 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>shlwapi.lib;libs/*.lib;libs/Release/*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;libs/*.lib;libs/Release/*.lib;$(SKSEVRPath)\skse\x64\Release-StaticLib\*.lib;$(SKSEVRPath)\skse\x64_v141\Release-StaticLib\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>if not "$(Skyrim64Path)" == "" (
-  echo Copying to $(Skyrim64Path)\Data\SKSE\Plugins
-  xcopy /Y "$(TargetPath)" "$(Skyrim64Path)\Data\SKSE\Plugins "
+      <Command>if not "$(SkyrimVRPath)" == "" (
+  echo Copying to $(SkyrimVRPath)\Data\SKSE\Plugins
+  xcopy /Y "$(TargetPath)" "$(SkyrimVRPath)\Data\SKSE\Plugins "
 ) </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

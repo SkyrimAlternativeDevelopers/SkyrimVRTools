@@ -5,9 +5,6 @@
 #include <mutex> 
 #include <list>
 
-#include "skse64_common/Relocation.h"
-#include "skse64_common/BranchTrampoline.h"
-
 #include "skse64/PapyrusNativeFunctions.h"
 #include "skse64/PapyrusEvents.h"
 #include "skse64/GameRTTI.h"
@@ -17,9 +14,6 @@
 #include "skse64/PluginAPI.h"
 #include "skse64/NiNodes.h"
 #include "skse64/NiObjects.h"
-
-
-#include "common/IPrefix.h"
 
 #include "api/PapyrusVRAPI.h"
 #include "api/PapyrusVRTypes.h"
@@ -77,30 +71,7 @@ namespace PapyrusVR
 	void DestroyLocalOverlapObject(StaticFunctionTag *base, UInt32 objectHandle);
 
 	#pragma region Event Registration
-		template<class T>
-		void GenericRegisterForEvent(T* object, RegistrationSetHolder<T*>* regHolder)
-		{
-			if (!object)
-			{
-				_MESSAGE("Called method with NULL parameter!");
-				return;
-			}
-
-			(*regHolder).Register(object->GetFormType(), object);
-		};
 		void FormRegisterForEvent(TESForm* object, RegistrationSetHolder<TESForm*>* regHolder);
-
-		template<class T>
-		void GenericUnregisterForEvent(T* object, RegistrationSetHolder<T*>* regHolder)
-		{
-			if (!object)
-			{
-				_MESSAGE("Called method with NULL parameter!");
-				return;
-			}
-
-			(*regHolder).Unregister(object->GetFormType(), object);
-		}
 		void FormRegisterForEvent(TESForm* object, RegistrationSetHolder<TESForm*>* regHolder);
 
 		//Used by papyrus scripts to register for Events

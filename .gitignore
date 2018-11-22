@@ -66,3 +66,7 @@ bld/
 *.user
 *.userosscache
 *.sln.docstates
+
+#SKSE/OpenVR dependencies
+src/sksevr/
+src/openvr/

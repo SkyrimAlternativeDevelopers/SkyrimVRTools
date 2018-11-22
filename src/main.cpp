@@ -33,7 +33,7 @@ PapyrusVR::VRManagerAPI* GetVRManager()
 //Returns the OpenVRHookMgr singleton instance
 OpenVRHookManagerAPI* GetVRHookManager()
 {
-	return OpenVRHookMgr::GetInstance();
+	return (OpenVRHookManagerAPI*)OpenVRHookMgr::GetInstance();
 }
 #pragma endregion
 
