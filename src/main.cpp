@@ -51,7 +51,7 @@ void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message)
 			{
 				_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
 				apiMessage.GetVRManager = GetVRManager;
-				apiMessage.GetOpenVRHook
+				apiMessage.GetOpenVRHook = GetVRHookManager;
 				//apiMessage.RegisterPoseUpdateListener = GetVRManager()->RegisterVRUpdateListener;
 
 				//Sends pointers to API functions/classes

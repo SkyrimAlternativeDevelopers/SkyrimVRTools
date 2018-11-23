@@ -3,22 +3,12 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <SkyrimVRPath>H:\SteamLibrary\steamapps\common\SkyrimVR</SkyrimVRPath>
-    <SKSEVRPath>$(ProjectDir)sksevr</SKSEVRPath>
-    <OpenVRPath>$(ProjectDir)openvr</OpenVRPath>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
   <ItemGroup>
     <BuildMacro Include="SkyrimVRPath">
       <Value>$(SkyrimVRPath)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
-    <BuildMacro Include="SKSEVRPath">
-      <Value>$(SKSEVRPath)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
-    </BuildMacro>
-    <BuildMacro Include="OpenVRPath">
-      <Value>$(OpenVRPath)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

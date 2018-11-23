@@ -5,16 +5,53 @@ VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skyrimvrtools", "src\SkyrimVRTools.vcxproj", "{9D903497-BB27-4C98-801C-E70FDF7E41FA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common_vc14", "src\sksevr\common\common_vc14.vcxproj", "{472E19AB-DEF0-42DF-819B-18722E8DC822}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skse64", "src\sksevr\skse64\skse64.vcxproj", "{639411C0-FC23-4819-A0C5-429A4E5D8A51}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skse64_common", "src\sksevr\skse64_common\skse64_common.vcxproj", "{5FD1C08D-DB80-480C-A1C6-F0920005CD13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Release|x64 = Release|x64
+		Debug-StaticLib|x64 = Debug-StaticLib|x64
+		Release-StaticLib|x64 = Release-StaticLib|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Debug|x64.ActiveCfg = Debug|x64
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Debug|x64.Build.0 = Debug|x64
+		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Debug-StaticLib|x64.ActiveCfg = Debug|x64
+		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Debug-StaticLib|x64.Build.0 = Debug|x64
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release|x64.ActiveCfg = Release|x64
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release|x64.Build.0 = Release|x64
+		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release-StaticLib|x64.ActiveCfg = Release|x64
+		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release-StaticLib|x64.Build.0 = Release|x64
+		#Dependency SKSE Projects
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug|x64.ActiveCfg = Debug|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug|x64.Build.0 = Debug|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug-StaticLib|x64.ActiveCfg = Debug|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug-StaticLib|x64.Build.0 = Debug|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Release|x64.ActiveCfg = Release|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Release|x64.Build.0 = Release|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Release-StaticLib|x64.ActiveCfg = Release|x64
+		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Release-StaticLib|x64.Build.0 = Release|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Debug|x64.ActiveCfg = Debug-StaticLib|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Debug|x64.Build.0 = Debug-StaticLib|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Debug-StaticLib|x64.ActiveCfg = Debug-StaticLib|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Debug-StaticLib|x64.Build.0 = Debug-StaticLib|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Release|x64.ActiveCfg = Release-StaticLib|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Release|x64.Build.0 = Release-StaticLib|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Release-StaticLib|x64.ActiveCfg = Release-StaticLib|x64
+		{639411C0-FC23-4819-A0C5-429A4E5D8A51}.Release-StaticLib|x64.Build.0 = Release-StaticLib|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Debug|x64.ActiveCfg = Debug|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Debug|x64.Build.0 = Debug|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Debug-StaticLib|x64.ActiveCfg = Debug|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Debug-StaticLib|x64.Build.0 = Debug|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Release|x64.ActiveCfg = Release|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Release|x64.Build.0 = Release|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Release-StaticLib|x64.ActiveCfg = Release|x64
+		{5FD1C08D-DB80-480C-A1C6-F0920005CD13}.Release-StaticLib|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
