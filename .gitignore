@@ -66,3 +66,4 @@ bld/
 *.user
 *.userosscache
 *.sln.docstates
+*.props
