@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skyrimvrtools", "src\SkyrimVRTools.vcxproj", "{9D903497-BB27-4C98-801C-E70FDF7E41FA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skyrimvrtools_api", "src\api\SkyrimVRToolsAPI.vcxproj", "{849411C0-FC23-4819-A0D5-429A4E6D8A51}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common_vc14", "src\sksevr\common\common_vc14.vcxproj", "{472E19AB-DEF0-42DF-819B-18722E8DC822}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skse64", "src\sksevr\skse64\skse64.vcxproj", "{639411C0-FC23-4819-A0C5-429A4E5D8A51}"
@@ -27,6 +29,15 @@ Global
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release|x64.Build.0 = Release|x64
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release-StaticLib|x64.ActiveCfg = Release|x64
 		{9D903497-BB27-4C98-801C-E70FDF7E41FA}.Release-StaticLib|x64.Build.0 = Release|x64
+		#Dependency API Project
+		{849411C0-FC23-4819-A0D5-429A4E6D8A51}.Debug|x64.ActiveCfg = Debug-StaticLib|x64
+		{849411C0-FC23-4819-A0D5-429A4E6D8A51}.Debug|x64.Build.0 = Debug-StaticLib|x64
+		{849411C0-FC23-4819-A0D5-429A4E6D8A51}.Debug-StaticLib|x64.ActiveCfg = Debug-StaticLib|x64
+		{849411C0-FC23-4819-A0D5-429A4E6D8A51}.Debug-StaticLib|x64.Build.0 = Debug-StaticLib|x64
+		{849411C0-FC23-4819-A0D5-429A4E6D8A51}.Release|x64.ActiveCfg = Release-StaticLib|x64
+		{849411C0-FC23-4819-A0D5-429A4E6D8A51}.Release|x64.Build.0 = Release-StaticLib|x64
+		{849411C0-FC23-4819-A0D5-429A4E6D8A51}.Release-StaticLib|x64.ActiveCfg = Release-StaticLib|x64
+		{849411C0-FC23-4819-A0D5-429A4E6D8A51}.Release-StaticLib|x64.Build.0 = Release-StaticLib|x64
 		#Dependency SKSE Projects
 		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug|x64.ActiveCfg = Debug|x64
 		{472E19AB-DEF0-42DF-819B-18722E8DC822}.Debug|x64.Build.0 = Debug|x64

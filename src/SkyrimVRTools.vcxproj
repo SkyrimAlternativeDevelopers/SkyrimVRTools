@@ -112,10 +112,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="api\collisions\LocalOverlapObject.cpp" />
-    <ClCompile Include="api\collisions\Sphere.cpp" />
-    <ClCompile Include="api\PapyrusVRTypes.cpp" />
-    <ClCompile Include="api\utils\OpenVRUtils.cpp" />
     <ClCompile Include="DirUtils.cpp" />
     <ClCompile Include="hooks\HookVRCompositor.cpp" />
     <ClCompile Include="hooks\HookVRSystem.cpp" />
@@ -126,15 +122,6 @@
     <ClCompile Include="VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="api\collisions\IShape.h" />
-    <ClInclude Include="api\collisions\LocalOverlapObject.h" />
-    <ClInclude Include="api\collisions\Sphere.h" />
-    <ClInclude Include="api\OpenVRTypes.h" />
-    <ClInclude Include="api\PapyrusVRAPI.h" />
-    <ClInclude Include="api\PapyrusVRTypes.h" />
-    <ClInclude Include="api\utils\OpenVRUtils.h" />
-    <ClInclude Include="api\VRManagerAPI.h" />
-    <ClInclude Include="api\VRHookAPI.h" />
     <ClInclude Include="DirUtils.h" />
     <ClInclude Include="EventHandling.h" />
     <ClInclude Include="hooks\IHookInterfaceFactory.h" />
@@ -154,6 +141,9 @@
     </ProjectReference>
     <ProjectReference Include="sksevr\skse64\skse64.vcxproj">
       <Project>{639411c0-fc23-4819-a0c5-429a4e5d8a51}</Project>
+    </ProjectReference>
+    <ProjectReference Include="api\SkyrimVRToolsAPI.vcxproj">
+      <Project>{849411C0-FC23-4819-A0D5-429A4E6D8A51}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
