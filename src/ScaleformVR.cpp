@@ -1,6 +1,5 @@
 #include "ScaleformVR.h"
 
-#include "skse64/ScaleformValue.h"
 #include "skse64/ScaleformMovie.h"
 #include "skse64/Hooks_Scaleform.h"
 #include "skse64/ScaleformCallbacks.h"

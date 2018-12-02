@@ -129,7 +129,7 @@
     <ClInclude Include="hooks\HookVRSystem.h" />
     <ClInclude Include="hooks\openvr_hook.h" />
     <ClInclude Include="PapyrusVR.h" />
-    <ClCompile Include="ScaleformVR.h" />
+    <ClInclude Include="ScaleformVR.h" />
     <ClInclude Include="VRManager.h" />
   </ItemGroup>
   <ItemGroup>
