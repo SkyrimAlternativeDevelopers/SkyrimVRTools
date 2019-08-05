@@ -20,6 +20,8 @@ static SKSEMessagingInterface		* g_messagingInterface = NULL;
 static PapyrusVRAPI apiMessage;
 
 
+// Func prototype
+void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message);
 
 
 #pragma region API
@@ -30,51 +32,14 @@ PapyrusVR::VRManagerAPI* GetVRManager()
 	return &PapyrusVR::VRManager::GetInstance();
 }
 
-//Returns the OpenVRHookMgr singleton instance
-OpenVRHookManagerAPI* GetVRHookManager()
+
+OpenVRHookManagerAPI* GetVRHookManagerAPI()
 {
 	return (OpenVRHookManagerAPI*)OpenVRHookMgr::GetInstance();
 }
-#pragma endregion
-
-#pragma region Messaging Interface
-
-// Listens for SKSE events
-void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message)
-{
-	if (message)
-	{
-		_MESSAGE("Received SKSE message %d", message->type);
-		if (message->type == SKSEMessagingInterface::kMessage_PostPostLoad)
-		{
-			if (g_messagingInterface && g_pluginHandle)
-			{
-				_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
-				apiMessage.GetVRManager = GetVRManager;
-				apiMessage.GetOpenVRHook = GetVRHookManager;
-				//apiMessage.RegisterPoseUpdateListener = GetVRManager()->RegisterVRUpdateListener;
-
-				//Sends pointers to API functions/classes
-				g_messagingInterface->Dispatch(g_pluginHandle, kPapyrusVR_Message_Init, &apiMessage, sizeof(apiMessage), NULL);
-			}
-		}
-
-		if (message->type == SKSEMessagingInterface::kMessage_DataLoaded)
-		{
-			//Register manifest file
-			PapyrusVR::VRManager::GetInstance().RegisterInputActions();
-		}
-
-		if (message->type == SKSEMessagingInterface::kMessage_PostLoadGame)
-		{
-			//Get player nodes, etc.
-			PapyrusVR::OpenVRUtils::SetupConversion();
-		}
-	}
-}
-
 
 #pragma endregion
+
 
 extern "C" 
 {
@@ -92,7 +57,7 @@ extern "C"
 		// populate info structure
 		info->infoVersion = PluginInfo::kInfoVersion;
 		info->name = "SkyrimVRTools";
-		info->version = 1;
+		info->version = 3;
 
 		// store plugin handle so we can identify ourselves later
 		g_pluginHandle = skse->GetPluginHandle();
@@ -162,4 +127,54 @@ extern "C"
 		return btest;
 	}
 
+	//Returns the OpenVRHookMgr singleton instance (lets give the user full control here)
+	OpenVRHookMgr* GetVRHookManager()
+	{
+		return OpenVRHookMgr::GetInstance();
+	}
+
+
+
 };
+
+
+
+#pragma region Messaging Interface
+
+// Listens for SKSE events
+void OnSKSEMessageReceived(SKSEMessagingInterface::Message* message)
+{
+	if (message)
+	{
+		_MESSAGE("Received SKSE message %d", message->type);
+		if (message->type == SKSEMessagingInterface::kMessage_PostPostLoad)
+		{
+			if (g_messagingInterface && g_pluginHandle)
+			{
+				_MESSAGE("Game Loaded, Dispatching Init messages to all listeners");
+				apiMessage.GetVRManager = GetVRManager;
+				apiMessage.GetOpenVRHook = GetVRHookManagerAPI;
+				//apiMessage.RegisterPoseUpdateListener = GetVRManager()->RegisterVRUpdateListener;
+
+				//Sends pointers to API functions/classes
+				g_messagingInterface->Dispatch(g_pluginHandle, kPapyrusVR_Message_Init, &apiMessage, sizeof(apiMessage), NULL);
+			}
+		}
+
+		if (message->type == SKSEMessagingInterface::kMessage_DataLoaded)
+		{
+			//Register manifest file
+			PapyrusVR::VRManager::GetInstance().RegisterInputActions();
+		}
+
+		if (message->type == SKSEMessagingInterface::kMessage_PostLoadGame)
+		{
+			//Get player nodes, etc.
+			PapyrusVR::OpenVRUtils::SetupConversion();
+		}
+	}
+}
+
+
+#pragma endregion
+

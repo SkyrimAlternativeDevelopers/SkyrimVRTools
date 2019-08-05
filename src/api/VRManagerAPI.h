@@ -37,3 +37,5 @@ namespace PapyrusVR
 		virtual TrackedDevicePose* GetPoseByDeviceEnum(VRDevice device, bool renderPose = true) = 0;
 	};
 }
+
+

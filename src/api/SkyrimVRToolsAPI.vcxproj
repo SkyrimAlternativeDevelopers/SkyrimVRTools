@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{849411C0-FC23-4819-A0D5-429A4E6D8A51}</ProjectGuid>
     <RootNamespace>skse64</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <SccProjectName>
     </SccProjectName>
     <SccAuxPath>

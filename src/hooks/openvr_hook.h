@@ -71,20 +71,10 @@ public:
 	{
 		mFakeVRCompositor = vrCompositor;
 	}
-	
-	vr::IVRSystem* GetVRSystem() const
-	{
-		return mVRSystem;
-	}
 
 	HookVRSystem* GetFakeVRSystem() const
 	{
 		return mFakeVRSystem;
-	}
-	
-	vr::IVRCompositor* GetVRCompositor() const
-	{
-		return mVRCompositor;
 	}
 
 	HookVRCompositor* GetFakeVRCompositor() const
@@ -92,11 +82,21 @@ public:
 		return mFakeVRCompositor;
 	}
 
-	bool IsInitialized();
-	void RegisterControllerStateCB(GetControllerState_CB cbfunc);
-	void RegisterGetPosesCB(WaitGetPoses_CB cbfunc);
-	void UnregisterControllerStateCB(GetControllerState_CB cbfunc);
-	void UnregisterGetPosesCB(WaitGetPoses_CB cbfunc);
+	vr::IVRSystem* GetVRSystem() const override
+	{
+		return mVRSystem;
+	}
+
+	vr::IVRCompositor* GetVRCompositor() const override
+	{
+		return mVRCompositor;
+	}
+
+	bool IsInitialized() override;
+	void RegisterControllerStateCB(GetControllerState_CB cbfunc) override;
+	void RegisterGetPosesCB(WaitGetPoses_CB cbfunc) override;
+	void UnregisterControllerStateCB(GetControllerState_CB cbfunc) override;
+	void UnregisterGetPosesCB(WaitGetPoses_CB cbfunc) override;
 	
 private:
 	vr::IVRSystem* mVRSystem = nullptr;
